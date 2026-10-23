@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma Oficial de Inteligencia Deportiva • Itagüí Leones F.C.</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --leones-verde: #186835;
+      --leones-verde-oscuro: #0f4422;
+      --leones-oro: #f59e0b;
+      --leones-amarillo: #facc15;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    .canvas-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+    }
+    #tacticalCanvas {
+      touch-action: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased font-sans min-h-screen">
+
+  <!-- BARRA SUPERIOR INSTITUCIONAL • ITAGÜÍ LEONES F.C. -->
+  <header class="bg-[#0f4422]/95 border-b border-[#186835] sticky top-0 z-50 px-3 sm:px-6 py-2.5 sm:py-3 shadow-xl backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-2.5 sm:space-x-3.5">
+        <!-- Escudo / Icono Oficial Auriverde -->
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-[#facc15] via-[#f59e0b] to-amber-700 flex items-center justify-center shadow-lg font-black text-slate-950 text-lg sm:text-xl border-2 border-amber-300 shrink-0">
+          🦁
+        </div>
+        <div>
+          <div class="flex items-center space-x-2 flex-wrap">
+            <h1 class="text-xs sm:text-base font-black text-white tracking-wider uppercase">ITAGÜÍ LEONES F.C.</h1>
+            <span class="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-bold rounded-full bg-amber-400 text-slate-950">Sistema Propio</span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-emerald-200/90 font-medium truncate max-w-[240px] sm:max-w-none">Torneo BetPlay • Unión Magdalena vs. Leones</p>
+        </div>
+      </div>
+
+      <!-- SELECTOR DE CATEGORÍA & ACCIÓN EJECUTIVA -->
+      <div class="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-end pt-1 sm:pt-0 border-t border-emerald-800/40 sm:border-t-0">
+        <div class="flex items-center bg-slate-900/90 rounded-lg p-1 border border-emerald-700/60 text-[11px] sm:text-xs shadow-inner">
+          <span class="text-slate-300 px-1.5 font-medium hidden xs:inline">Div:</span>
+          <select id="categoriaSelect" class="bg-[#186835] text-amber-300 font-bold rounded px-2 sm:px-3 py-1 border border-emerald-500/50 focus:outline-none cursor-pointer text-xs">
+            <option value="primer_equipo" selected>Primer Equipo (BetPlay)</option>
+            <option value="sub20">Fuerzas Básicas • Sub-20</option>
+            <option value="sub17">Fuerzas Básicas • Sub-17</option>
+            <option value="sub15">Fuerzas Básicas • Sub-15</option>
+            <option value="sub13">Academia Infantil • Sub-13</option>
+          </select>
+        </div>
+
+        <button onclick="generarDossierModal()" class="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-lg text-[11px] sm:text-xs shadow-lg transition flex items-center space-x-1.5 cursor-pointer shrink-0">
+          <span>📄</span>
+          <span>Dossier Scout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TARJETAS DE CONTROL DEL CLUB (DATOS REALES DITAIRES) -->
+  <section class="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      <div class="bg-slate-900/90 border border-emerald-900/60 p-3 sm:p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Plantilla Profesional</p>
+          <p class="text-lg sm:text-xl font-black text-white">28 Jugadores</p>
+          <span class="text-[10px] sm:text-[11px] text-amber-400 font-semibold truncate block">DT: Alejandro Arboleda</span>
+        </div>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-base sm:text-lg font-bold border border-emerald-500/20 shrink-0">⚽</div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-emerald-900/60 p-3 sm:p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Dpto. Médico (Ditaires)</p>
+          <p class="text-lg sm:text-xl font-black text-amber-400">2 En Fisio</p>
+          <span class="text-[10px] sm:text-[11px] text-slate-300 truncate block">Dr. Emmanuel Álvarez</span>
+        </div>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-base sm:text-lg font-bold border border-amber-500/20 shrink-0">🩺</div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-emerald-900/60 p-3 sm:p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Gestión Contractual</p>
+          <p class="text-lg sm:text-xl font-black text-rose-400">3 Por Vencer</p>
+          <span class="text-[10px] sm:text-[11px] text-rose-300 truncate block">Gerencia: Edson Montes</span>
+        </div>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-base sm:text-lg font-bold border border-rose-500/20 shrink-0">⚖️</div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-emerald-900/60 p-3 sm:p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Clips Sincronizados</p>
+          <p class="text-lg sm:text-xl font-black text-emerald-400">5 Jugadas Clave</p>
+          <span class="text-[10px] sm:text-[11px] text-emerald-300 truncate block">Cuadro a Cuadro</span>
+        </div>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-base sm:text-lg font-bold border border-emerald-500/20 shrink-0">📹</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PESTAÑAS PRINCIPALES DEL SISTEMA (RESPONSIVE TOUCH-FRIENDLY) -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 pb-12">
+    <div class="border-b border-slate-800 flex space-x-2 sm:space-x-6 text-xs sm:text-sm font-bold mb-4 sm:mb-6 overflow-x-auto no-scrollbar whitespace-nowrap">
+      <button onclick="cambiarVista('video')" id="tab-video" class="pb-2.5 sm:pb-3 text-amber-400 border-b-2 border-amber-400 flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
+        <span>🎥</span>
+        <span class="hidden sm:inline">Laboratorio Táctico & Video (Jack Bedoya / DT Arboleda)</span>
+        <span class="sm:hidden">Video Táctico</span>
+      </button>
+      <button onclick="cambiarVista('ficha')" id="tab-ficha" class="pb-2.5 sm:pb-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
+        <span>🦁</span>
+        <span class="hidden sm:inline">Ficha 360° del Futbolista (Plantilla Real & Cantera)</span>
+        <span class="sm:hidden">Ficha 360°</span>
+      </button>
+      <button onclick="cambiarVista('medicina')" id="tab-medicina" class="pb-2.5 sm:pb-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
+        <span>🏥</span>
+        <span class="hidden sm:inline">Medicina Deportiva & Cargas (Dr. Álvarez / PF Pérez)</span>
+        <span class="sm:hidden">Dpto. Médico</span>
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 1: LABORATORIO DE VIDEO & TELESTRATION -->
+    <!-- ========================================== -->
+    <div id="vista-video" class="space-y-4 sm:space-y-6">
+
+      <!-- SELECTOR DE LOS 5 CLIPS REALES DEL PARTIDO (SWIPEABLE EN MÓVIL) -->
+      <div class="bg-slate-900/90 border border-emerald-800/60 p-3 sm:p-4 rounded-2xl shadow-xl space-y-2.5 sm:space-y-3">
+        <div class="flex items-center justify-between flex-wrap gap-1.5">
+          <div class="flex items-center space-x-2">
+            <span class="text-amber-400 text-base sm:text-lg">🎬</span>
+            <h2 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider">Librería de 5 Jugadas Reales • Torneo BetPlay</h2>
+          </div>
+          <span class="text-[10px] sm:text-xs text-emerald-300 font-semibold bg-emerald-950/80 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-emerald-700/60">100% Verificado</span>
+        </div>
+        
+        <!-- 5 BOTONES / TARJETAS DE CLIPS: DESLIZABLES EN MÓVIL, GRID EN COMPUTADOR -->
+        <div class="flex overflow-x-auto no-scrollbar space-x-2.5 pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-3 sm:space-x-0" id="clipSelectorGrid">
+          <!-- Clip 1 -->
+          <button onclick="cargarClip('clip_1')" id="btn-clip_1" class="clip-card min-w-[210px] sm:min-w-0 p-2.5 sm:p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2 shrink-0 sm:shrink">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 10:58</span>
+              <span class="text-xs">⚽</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol 1 Rival</p>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Centro y remate Freddy Molina</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Desajuste Zaga</span>
+          </button>
+
+          <!-- Clip 2 -->
+          <button onclick="cargarClip('clip_2')" id="btn-clip_2" class="clip-card min-w-[210px] sm:min-w-0 p-2.5 sm:p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2 shrink-0 sm:shrink">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 14:58</span>
+              <span class="text-xs">⚽</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol 2 Rival</p>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Disparo rasante M. Ballesteros</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Transición Central</span>
+          </button>
+
+          <!-- Clip 3 -->
+          <button onclick="cargarClip('clip_3')" id="btn-clip_3" class="clip-card min-w-[210px] sm:min-w-0 p-2.5 sm:p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-emerald-500 bg-emerald-950/40 text-left transition cursor-pointer flex flex-col justify-between space-y-2 shrink-0 sm:shrink">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">1T • 18:29</span>
+              <span class="text-xs">🛡️</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Bloque & Restrepo #24</p>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Salida corta rival y repliegue</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Táctica Colectiva</span>
+          </button>
+
+          <!-- Clip 4 -->
+          <button onclick="cargarClip('clip_4')" id="btn-clip_4" class="clip-card min-w-[210px] sm:min-w-0 p-2.5 sm:p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2 shrink-0 sm:shrink">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">2T • 56:17</span>
+              <span class="text-xs">🦁</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol Leones (2-1)</p>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Córner & cabezazo C. Rodríguez #9</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Balón Parado</span>
+          </button>
+
+          <!-- Clip 5 -->
+          <button onclick="cargarClip('clip_5')" id="btn-clip_5" class="clip-card min-w-[210px] sm:min-w-0 p-2.5 sm:p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2 shrink-0 sm:shrink">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">2T • 92:21</span>
+              <span class="text-xs">🔥</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol Empate (2-2)</p>
+              <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Épica agónica de L. Pacheco #17</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Minuto 90+3'</span>
+          </button>
+        </div>
+      </div>
+          <!-- Clip 1 -->
+          <button onclick="cargarClip('clip_1')" id="btn-clip_1" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 10:58</span>
+              <span class="text-xs">⚽</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol 1 Rival</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Centro y definición de Freddy Molina</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Desajuste Zaga</span>
+          </button>
+
+          <!-- Clip 2 -->
+          <button onclick="cargarClip('clip_2')" id="btn-clip_2" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 14:58</span>
+              <span class="text-xs">⚽</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol 2 Rival</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Disparo rasante M. Ballesteros</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Transición Central</span>
+          </button>
+
+          <!-- Clip 3 -->
+          <button onclick="cargarClip('clip_3')" id="btn-clip_3" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-emerald-500 bg-emerald-950/40 text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">1T • 18:29</span>
+              <span class="text-xs">🛡️</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Bloque & Restrepo #24</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Salida corta rival y repliegue</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Táctica Colectiva</span>
+          </button>
+
+          <!-- Clip 4 -->
+          <button onclick="cargarClip('clip_4')" id="btn-clip_4" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">2T • 56:17</span>
+              <span class="text-xs">🦁</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol Leones (2-1)</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Córner & cabezazo C. Rodríguez #9</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Balón Parado</span>
+          </button>
+
+          <!-- Clip 5 -->
+          <button onclick="cargarClip('clip_5')" id="btn-clip_5" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">2T • 92:21</span>
+              <span class="text-xs">🔥</span>
+            </div>
+            <div>
+              <p class="text-xs font-black text-white leading-snug">Gol Empate (2-2)</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Épica agónica de L. Pacheco #17</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Épica en 90+3'</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- REPRODUCTOR DE VIDEO REAL HTML5 CON CANVAS TÁCTICO -->
+        <div class="lg:col-span-2 space-y-3">
+          <div class="bg-slate-900 border border-emerald-900/60 rounded-2xl overflow-hidden shadow-2xl relative">
+            <div class="bg-[#0f4422] px-4 py-2.5 flex items-center justify-between text-xs border-b border-[#186835]">
+              <span class="text-emerald-100 font-bold flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="clipHeaderTitulo">Clip 3 • Saque de Fondo & Bloque Medio (18:29 1T) • Nicolás Restrepo (#24)</span>
+              </span>
+              <span class="text-amber-300 font-mono font-black" id="tiempoDisplay">00:00 / 00:35</span>
+            </div>
+
+            <!-- CONTENEDOR DEL VIDEO REAL Y CANVAS DE DIBUJO -->
+            <div class="video-wrapper">
+              <video id="matchVideo" class="w-full h-full object-contain" controls playsinline preload="auto">
+                <source id="videoSource" src="clip_3_bloque_restrepo.mp4" type="video/mp4">
+                Tu navegador no soporta video MP4 nativo.
+              </video>
+
+              <!-- Canvas transparente para dibujo táctico -->
+              <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-auto"></canvas>
+            </div>
+
+            <!-- BARRA DE HERRAMIENTAS TÁCTICAS -->
+            <div class="p-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div class="flex items-center space-x-2">
+                <button id="btnModoDibujo" onclick="toggleModoDibujo()" class="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/40 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition">
+                  <span id="dibujoIcon">✏️</span>
+                  <span id="dibujoText">Activar Pizarra Táctica</span>
+                </button>
+
+                <div id="herramientasDibujo" class="hidden flex items-center space-x-2 pl-2 border-l border-slate-700">
+                  <button onclick="setColor('#f59e0b')" class="w-5 h-5 rounded-full bg-amber-500 border border-white/60 cursor-pointer shadow" title="Amarillo Leones"></button>
+                  <button onclick="setColor('#186835')" class="w-5 h-5 rounded-full bg-emerald-600 border border-white/60 cursor-pointer shadow" title="Verde Táctico"></button>
+                  <button onclick="setColor('#ef4444')" class="w-5 h-5 rounded-full bg-rose-500 border border-white/60 cursor-pointer shadow" title="Rojo Alerta"></button>
+                  <button onclick="limpiarCanvas()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs cursor-pointer">Borrar Trazo</button>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <button onclick="generarMicroClip()" class="px-3.5 py-1.5 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black rounded-lg shadow-md border border-emerald-500/40 flex items-center space-x-1.5 cursor-pointer transition">
+                  <span>⚡</span>
+                  <span>Exportar Micro-Clip al DT Arboleda</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-emerald-900/40 flex items-center justify-between">
+            <span>👕 <strong>Equipaciones:</strong> Leones juega con uniforme <strong>blanco</strong> • Unión Magdalena con <strong>azulgrana</strong>.</span>
+            <span id="clipHeaderSubtitulo" class="text-amber-400 font-semibold">1T • Minuto 18:29 del partido oficial</span>
+          </div>
+        </div>
+
+        <!-- PANEL DINÁMICO: DESGLOSE SEGUNDO A SEGUNDO DEL CLIP SELECCIONADO -->
+        <div class="bg-slate-900 border border-emerald-900/60 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div class="flex items-center space-x-2">
+                <span class="text-amber-400 text-base">⏱️</span>
+                <h3 class="font-bold text-white text-sm" id="clipPanelTitulo">Desglose Segundo a Segundo</h3>
+              </div>
+              <span id="clipBadgeCategoria" class="px-2 py-0.5 text-[11px] font-bold bg-[#186835] text-amber-300 border border-emerald-500/30 rounded-full">Cuadro a Cuadro</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 mb-3">Haz clic en cualquier hito para saltar al segundo exacto:</p>
+
+            <!-- CONTENEDOR DINÁMICO DE EVENTOS DEL CLIP -->
+            <div class="space-y-2" id="eventosClipContainer">
+              <!-- Se puebla dinámicamente con JavaScript -->
+            </div>
+          </div>
+
+          <!-- DIAGNÓSTICO TÁCTICO OFICIAL DE JACK BEDOYA & DT ARBOLEDA -->
+          <div class="mt-4 pt-3 border-t border-slate-800 bg-slate-950/80 p-3.5 rounded-xl border border-emerald-900/40 space-y-2">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm">📋</span>
+              <p class="text-xs font-black text-amber-300 uppercase tracking-wider">Dictamen de Jack Bedoya & DT Arboleda</p>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed" id="clipAnalisisTexto">
+              Evaluación táctica en carga...
+            </p>
+            <div class="bg-emerald-950/40 border border-emerald-700/40 p-2 rounded-lg text-[11px] text-emerald-300" id="clipRecomendacionDibujo">
+              Tip para Pizarra Táctica: Pausa el video para trazar coberturas.
+            </div>
+            <button onclick="alert('⚡ Micro-análisis táctico recortado y empaquetado para la charla técnica de Leones F.C.')" class="w-full mt-1.5 py-2 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-bold text-xs rounded-lg border border-emerald-500/30 transition cursor-pointer">
+              Exportar Paquete Táctico para el Plantel
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 2: FICHA ÚNICA 360° • JUGADORES REALES -->
+    <!-- ========================================== -->
+    <div id="vista-ficha" class="hidden space-y-6">
+      
+      <!-- SELECTOR DE JUGADOR DE LA PLANTILLA OFICIAL DE LEONES -->
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-xs text-slate-400 font-bold">Seleccionar Jugador de la Plantilla (2026-II):</span>
+          <select id="jugadorSelector" onchange="actualizarFichaJugador(this.value)" class="bg-slate-800 text-amber-400 font-bold text-xs rounded px-3 py-1.5 border border-slate-700 cursor-pointer">
+            <option value="restrepo_nicolas" selected>#24 • Nicolás Restrepo (Lateral / Cantera Sub-20 - ¡Visible en Video!)</option>
+            <option value="meneses">#2 • Germán Meneses (Defensa Central / Titular)</option>
+            <option value="figueroa">#1 • Jhon Figueroa (Arquero / Capitán)</option>
+            <option value="rodriguez">#9 • Cristian Rodríguez (Delantero Centro / Gol vs. Unión)</option>
+            <option value="pacheco">#17 • Léider Pacheco (Extremo / Gol del 2-2 al 90+3')</option>
+            <option value="soto">#18 • Tomás Soto (Lateral Derecho / Refuerzo Cantera)</option>
+            <option value="montoya">#10 • Santiago Montoya (Volante Ofensivo / Creador)</option>
+            <option value="villa">#7 • David Villa (Extremo / Velocidad)</option>
+            <option value="moreno">#6 • Jerónimo Moreno (Volante Mixto / Proyección)</option>
+            <option value="bonilla">#11 • Juan David Bonilla (Extremo / Desborde)</option>
+            <option value="granados">#8 • Rafael Granados (Volante Mixto)</option>
+            <option value="urrea">#4 • Sebastián Urrea (Defensa Central)</option>
+            <option value="penaloza">#20 • Kevin Peñaloza (Delantero)</option>
+          </select>
+        </div>
+        <span class="text-xs text-emerald-400 font-semibold">Jugador #24 visible en el video a los 02:12</span>
+      </div>
+
+      <!-- ENCABEZADO DEL JUGADOR DINÁMICO -->
+      <div class="bg-gradient-to-r from-slate-900 via-[#0f4422]/60 to-slate-900 border border-emerald-700/60 p-5 rounded-2xl shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <div id="jugadorDorsalBadge" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#facc15] via-[#f59e0b] to-amber-700 flex items-center justify-center text-2xl font-black text-slate-950 border-2 border-amber-300 shadow-lg">
+            24
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h2 id="jugadorNombre" class="text-lg font-black text-white tracking-wide">Nicolás Restrepo</h2>
+              <span id="jugadorCategoriaBadge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-[#186835] text-amber-300 border border-emerald-500/40">Fuerzas Básicas • Sub-20 / Primer Equipo</span>
+            </div>
+            <p id="jugadorPosicion" class="text-xs text-slate-300 mt-0.5">Lateral Izquierdo • Pierna Hábil: Izquierda • Cantera Itagüí Leones</p>
+            <div class="flex items-center space-x-3 mt-1.5 text-xs text-slate-400">
+              <span id="jugadorFisico">Altura: <strong>1.77 m</strong> • Peso: <strong>71 kg</strong></span>
+              <span>•</span>
+              <span id="jugadorAntiguedad">En el club desde: <strong>2021 (Desde Sub-15)</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="text-right">
+            <p class="text-[11px] text-slate-400 uppercase font-bold">Valoración Rendimiento</p>
+            <p id="jugadorRating" class="text-xl font-mono font-black text-amber-400">8.5 / 10</p>
+          </div>
+          <button onclick="generarDossierModal()" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs shadow-md transition cursor-pointer">
+            Exportar Dossier Scout PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- TRES COLUMNAS PRINCIPALES (LEGAL, MÉDICO, FÍSICO) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- COLUMNA 1: CONTRATO & DERECHOS FORMATIVOS -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <h3 class="font-bold text-white text-sm flex items-center space-x-2">
+              <span>⚖️</span>
+              <span>Contrato & Derechos FIFA</span>
+            </h3>
+            <span id="contratoSemaforo" class="px-2 py-0.5 text-[10px] font-black rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">VIGENTE</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="bg-slate-800/60 border border-slate-700/60 p-3 rounded-xl">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-300 font-bold">Vencimiento del Vínculo</span>
+                <span id="contratoFecha" class="text-amber-400 font-mono font-bold">31/12/2027</span>
+              </div>
+              <p id="contratoDetalle" class="text-slate-400 mt-1">Primer contrato profesional firmado tras su paso por la Sub-17 de Leones.</p>
+            </div>
+
+            <div class="bg-slate-800/60 p-3 rounded-xl space-y-1 border border-slate-700/60">
+              <div class="flex justify-between text-slate-300">
+                <span>Derechos Formativos Acumulados:</span>
+                <strong id="derechosFIFA" class="text-emerald-400 font-mono">$45,000 USD</strong>
+              </div>
+              <p class="text-[11px] text-slate-400">4 años de formación en Ditaires protegidos por el pasaporte FIFA TMS.</p>
+            </div>
+
+            <div class="bg-slate-800/60 p-3 rounded-xl space-y-1 border border-slate-700/60">
+              <div class="flex justify-between text-slate-400">
+                <span>Gerencia Deportiva:</span>
+                <strong class="text-white">Edson Montes</strong>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Cláusula de Rescisión:</span>
+                <strong class="text-amber-400 font-mono">$800,000 USD</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA 2: DEPARTAMENTO MÉDICO DITAIRES -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <h3 class="font-bold text-white text-sm flex items-center space-x-2">
+              <span>🩺</span>
+              <span>Dpto. Médico (Dr. Álvarez)</span>
+            </h3>
+            <span id="estadoMedicoBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ALTA MÉDICA</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+              <p class="text-emerald-300 font-bold">Diagnóstico: Habilitado al 100%</p>
+              <p class="text-slate-300 mt-1">Sin restricciones musculares. Evaluado y habilitado para 90 minutos de juego.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-slate-400 font-bold">Historial Clínico en Leones F.C.:</p>
+              <div class="border-l-2 border-emerald-600 pl-3 space-y-2">
+                <div>
+                  <p class="text-white font-medium">Revisión Fisiológica y Test Aeróbico</p>
+                  <p class="text-[11px] text-slate-400">Ene 2026 • VO2max: 56.4 ml/kg/min • Sede Ditaires</p>
+                </div>
+                <div>
+                  <p class="text-white font-medium">Esguince de Tobillo Izquierdo (Sub-17)</p>
+                  <p class="text-[11px] text-slate-400">Oct 2024 • 10 días de readaptación con Nathalia López</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex justify-between">
+              <span>Nutricionista: Hugo Hoyos</span>
+              <span>Grasa: 9.4%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA 3: PREPARACIÓN FÍSICA & WELLNESS -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <h3 class="font-bold text-white text-sm flex items-center space-x-2">
+              <span>⚡</span>
+              <span>Cargas Físicas (PF Pérez)</span>
+            </h3>
+            <span class="px-2 py-0.5 text-[10px] font-black rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">ACWR: 1.15</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-300 font-medium">Semáforo de Fatiga (ACWR)</span>
+                <span class="text-emerald-400 font-bold font-mono">1.15 (Zona Segura)</span>
+              </div>
+              <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-2 rounded-full" style="width: 60%"></div>
+              </div>
+              <p class="text-[11px] text-slate-400">Capacidad de sprint repetido óptima para recorrido de banda.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-center">
+              <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Velocidad Pico:</span>
+                <p id="jugadorVelocidad" class="text-amber-400 font-mono font-black text-sm">30.1 km/h</p>
+              </div>
+              <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Sprint 30m:</span>
+                <p id="jugadorSprint" class="text-amber-400 font-mono font-black text-sm">3.90 s</p>
+              </div>
+            </div>
+
+            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
+              <span class="text-slate-300 font-medium">Maduración Biológica (Cantera Leones)</span>
+              <p class="text-emerald-400 font-bold mt-0.5">98.5% Desarrollo Adulto</p>
+              <p class="text-[11px] text-slate-400 mt-1">Estatura adulta alcanzada. Excelente potencia en tren inferior.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECCIÓN DE CLIPS DE VIDEO REALES VINCULADOS AL JUGADOR -->
+      <div class="bg-slate-900 border border-emerald-900/40 p-5 rounded-2xl shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-white text-sm flex items-center space-x-2">
+            <span>🎬</span>
+            <span id="tituloClipsJugador">Jugadas Reales en este Partido • Nicolás Restrepo (#24)</span>
+          </h3>
+          <span class="text-xs text-amber-400 font-medium">Etiquetadas en el Video por Jack Bedoya</span>
+        </div>
+
+        <!-- CLIPS ESPECÍFICOS DEL JUGADOR VINCULADOS A LOS 5 CLIPS REALES -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="contenedorClipsJugador">
+          <!-- Se puebla dinámicamente con JavaScript según el jugador seleccionado -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 3: MEDICINA & CONTROL DE CARGAS     -->
+    <!-- ========================================== -->
+    <div id="vista-medicina" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-emerald-900/60 p-6 rounded-2xl shadow">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-base font-black text-white">Departamento Médico & Kinesiología • Itagüí Leones F.C.</h3>
+            <p class="text-xs text-slate-400">Supervisado por: Dr. Emmanuel Álvarez, Dra. Diana Grecco y Fisioterapeuta Nathalia López.</p>
+          </div>
+          <span class="px-3 py-1 bg-[#186835] text-amber-300 font-bold text-xs rounded-lg border border-emerald-500/40">Sede Ditaires</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60">
+            <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">Parte Médico Oficial (Fecha 15)</h4>
+            <div class="space-y-3 text-xs">
+              <div class="p-3 bg-slate-900 rounded-lg border border-rose-500/30 flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-white">Sebastián Urrea (Defensa #4)</p>
+                  <p class="text-slate-400">Distensión grado 1 en aductor • Tratamiento con Fisioterapeuta Nathalia López</p>
+                </div>
+                <span class="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold rounded">NO DISPONIBLE (7 DÍAS)</span>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-lg border border-amber-500/30 flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-white">Rafael Granados (Volante #8)</p>
+                  <p class="text-slate-400">Fatiga en aductor • Fase de trote con PF Julián Pérez</p>
+                </div>
+                <span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold rounded">ALTA PROBABLE (48H)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3">Monitor de Carga de Entrenamiento (RPE)</h4>
+            <p class="text-xs text-slate-400 mb-3">28 jugadores respondieron la escala de esfuerzo tras la sesión en el Estadio Ditaires.</p>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center p-2.5 bg-slate-900 rounded-lg">
+                <span class="text-white">Promedio de Carga Percibida (Borg 1-10):</span>
+                <strong class="text-amber-400 font-mono text-sm">7.1 / 10</strong>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-900 rounded-lg">
+                <span class="text-white">Promedio de Horas de Sueño:</span>
+                <strong class="text-emerald-400 font-mono text-sm">8.2 horas</strong>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-900 rounded-lg">
+                <span class="text-white">Jugadores en Riesgo de Sobrecarga (ACWR &gt; 1.4):</span>
+                <strong class="text-emerald-400 font-mono text-sm">0 Jugadores (Zona Verde)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE DOSSIER OFICIAL PARA SCOUTING CON ESCUDO DE LEONES -->
+  <div id="dossierModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-[#186835] rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start border-b border-emerald-900/60 pb-3">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#facc15] to-amber-600 text-slate-950 font-black text-2xl flex items-center justify-center shadow">🦁</div>
+          <div>
+            <h3 class="text-base font-black text-white tracking-wide">ITAGÜÍ LEONES FÚTBOL CLUB S.A.</h3>
+            <p class="text-xs text-amber-400 font-bold">Dossier Técnico Oficial de Scouting y Proyección Deportiva</p>
+          </div>
+        </div>
+        <button onclick="cerrarDossierModal()" class="text-slate-400 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+        <div class="flex justify-between border-b border-slate-800 pb-2.5">
+          <span>Futbolista: <strong id="dossierNombre" class="text-white">Nicolás Restrepo</strong></span>
+          <span>Posición: <strong id="dossierPosicion" class="text-amber-400">Lateral Izquierdo #24</strong></span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center py-2.5 bg-slate-900 rounded-lg border border-emerald-950">
+          <div>
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Estatura / Peso:</span>
+            <p class="font-bold text-white text-xs mt-0.5">1.77 m • 71 kg</p>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Velocidad Máx:</span>
+            <p class="font-bold text-emerald-400 text-xs mt-0.5">30.1 km/h</p>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Precisión de Pase:</span>
+            <p class="font-bold text-amber-400 text-xs mt-0.5">84.2% Éxito</p>
+          </div>
+        </div>
+        <p class="text-slate-300 leading-relaxed">
+          <strong>Evaluación Técnica (DT Alejandro Arboleda & Jack Bedoya):</strong> Lateral moderno con gran disciplina táctica y zancada potente. Formado en la cantera de Ditaires desde los 15 años. Excelente capacidad de repliegue y entrega segura en salida. Proyección sólida para consolidación en primera división.
+        </p>
+        <div class="p-3 bg-[#186835]/20 rounded-lg border border-[#186835] text-slate-300 flex justify-between items-center">
+          <span><strong>Situación Legal:</strong> Vínculo con Leones F.C. hasta Dic/2027.</span>
+          <span class="text-amber-300 font-bold font-mono">FIFA ID: COL-10136</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-2">
+        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition cursor-pointer">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
+        <button onclick="cerrarDossierModal()" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black rounded-lg text-xs transition cursor-pointer">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LÓGICA DE INTERACTIVIDAD (5 CLIPS REALES, VIDEO NATIVO, TELESTRATION Y JUGADORES) -->
+  <script>
+    const matchVideo = document.getElementById('matchVideo');
+    const tiempoDisplay = document.getElementById('tiempoDisplay');
+    let currentClipKey = 'clip_3';
+
+    // BASE DE DATOS DE LOS 5 CLIPS REALES DEL PARTIDO (ANÁLISIS CUADRO A CUADRO)
+    const clipsData = {
+      clip_1: {
+        archivo: "clip_1_gol1_rival.mp4",
+        titulo: "Clip 1 • Gol 1 Rival (10:58 1T) • Freddy Molina",
+        subtitulo: "1T • Minuto 10:58 • Desajuste en repliegue y centro al segundo palo",
+        duracion: "00:35",
+        duracionSec: 35,
+        categoria: "Análisis Defensivo",
+        eventos: [
+          { sec: 0, timeStr: "00:00", icono: "🏃", titulo: "Inicio de progresión rival", desc: "Min 10:40 • Unión Magdalena avanza abriendo la cancha por la banda derecha." },
+          { sec: 11, timeStr: "00:11", icono: "🎯", titulo: "Centro al corazón del área chica", desc: "Min 10:51 • Centro con comba al segundo palo hacia la espalda de los defensores." },
+          { sec: 18, timeStr: "00:18", icono: "⚽", titulo: "¡Gol de Freddy Molina (1-0)!", desc: "Min 10:58 • Anticipación y definición junto al poste ante el achique de Jhon Figueroa." },
+          { sec: 25, timeStr: "00:25", icono: "📋", titulo: "Reagrupación de la zaga auriverde", desc: "Min 11:05 • Ajuste posicional inmediato para taponar el carril opuesto." }
+        ],
+        analisis: "<strong>Dictamen Táctico de Jack Bedoya & DT Arboleda:</strong> Gol concedido por falta de basculación a tiempo del lateral opuesto al viaje del balón. Es el clip formativo esencial para mostrar a los defensas juveniles de Ditaires la necesidad de sincronizar el paso adelante para dejar al delantero en fuera de juego o cerrar la diagonal interior.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:11 y traza en rojo la distancia entre el central y el atacante que remata.",
+        colorBadge: "rose"
+      },
+      clip_2: {
+        archivo: "clip_2_gol2_rival.mp4",
+        titulo: "Clip 2 • Gol 2 Rival (14:58 1T) • Manuel Ballesteros",
+        subtitulo: "1T • Minuto 14:58 • Pérdida en salida y remate rasante central",
+        duracion: "00:35",
+        duracionSec: 35,
+        categoria: "Transición Defensiva",
+        eventos: [
+          { sec: 0, timeStr: "00:00", icono: "⚔️", titulo: "Pérdida en salida de Leones", desc: "Min 14:40 • Pérdida de balón en tres cuartos; Unión activa transición rápida." },
+          { sec: 12, timeStr: "00:12", icono: "⚠️", titulo: "Fijación y quiebre de línea", desc: "Min 14:52 • El volante rival arrastra la marca y filtra la pelota al callejón central." },
+          { sec: 18, timeStr: "00:18", icono: "⚽", titulo: "¡Gol de Manuel Ballesteros (2-0)!", desc: "Min 14:58 • Remate rasante y ajustado al palo derecho que supera la estirada felina." },
+          { sec: 26, timeStr: "00:26", icono: "🗣️", titulo: "Instrucción de banco (DT Arboleda)", desc: "Min 15:06 • El cuerpo técnico pide juntar las líneas del doble pivote." }
+        ],
+        analisis: "<strong>Dictamen Táctico:</strong> Desorganización tras pérdida en zona de gestación. Permite evaluar la importancia de la 'falta táctica preventiva' antes de que el adversario pise la medialuna con panorama de tiro libre.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:12 y dibuja la línea de retroceso de los mediocentros para cerrar el carril central.",
+        colorBadge: "rose"
+      },
+      clip_3: {
+        archivo: "clip_3_bloque_restrepo.mp4",
+        titulo: "Clip 3 • Saque de Fondo & Bloque Medio (18:29 1T) • Nicolás Restrepo (#24)",
+        subtitulo: "1T • Minuto 18:29 • Disciplina táctica y basculación en bloque compacto",
+        duracion: "00:35",
+        duracionSec: 35,
+        categoria: "Estructura Colectiva",
+        eventos: [
+          { sec: 0, timeStr: "00:00", icono: "🧤", titulo: "Preparación saque de meta rival", desc: "Min 18:15 • El guardameta Manuel Tasso ubica el balón en el área pequeña." },
+          { sec: 14, timeStr: "00:14", icono: "🦁", titulo: "Nicolás Restrepo (#24) en banda", desc: "Min 18:29 • Claramente visible en el sector inferior derecho retrocediendo y perfilándose." },
+          { sec: 22, timeStr: "00:22", icono: "🛡️", titulo: "Estructura 1-4-4-2 compacta", desc: "Min 18:37 • Línea de 4 defensores y 4 volantes achicando espacios interiores." },
+          { sec: 31, timeStr: "00:31", icono: "🛑", titulo: "Rival forzado al balón dividido", desc: "Min 18:46 • Ante el bloqueo cerrado de Leones, Unión renuncia a salir jugando y lanza en largo." }
+        ],
+        analisis: "<strong>Evaluación Individual (Nicolás Restrepo #24):</strong> Gran rigor táctico del lateral canterano de la Sub-20. Mantiene la distancia de seguridad con el defensa central, cierra el pase entre líneas y obliga al rival al pelotazo forzado.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:14 para marcar con círculo amarillo a Nicolás Restrepo (#24) y trazar su zona de cobertura.",
+        colorBadge: "emerald"
+      },
+      clip_4: {
+        archivo: "clip_4_gol_rodriguez.mp4",
+        titulo: "Clip 4 • ¡Gol de Leones! 2-1 (56:17 2T) • Cristian Rodríguez (#9)",
+        subtitulo: "2T • Minuto 56:17 • Córner cerrado al primer palo y frentazo imparable",
+        duracion: "00:40",
+        duracionSec: 40,
+        categoria: "Balón Parado Ofensivo (ABP)",
+        eventos: [
+          { sec: 0, timeStr: "00:00", icono: "🚩", titulo: "Acomodación de cabeceadores", desc: "Min 55:50 • Bloque de cabeceadores de Leones se posiciona en el punto penal." },
+          { sec: 18, timeStr: "00:18", icono: "📐", titulo: "Cobro con rosca al primer palo", desc: "Min 56:08 • Envío tenso desde el córner izquierdo superando el primer obstáculo." },
+          { sec: 25, timeStr: "00:25", icono: "⚽", titulo: "¡GOLAZO DE CABEZA (2-1)!", desc: "Min 56:17 • Cristian Rodríguez (#9) anticipa a dos defensores e infla la red con potencia." },
+          { sec: 32, timeStr: "00:32", icono: "🔥", titulo: "Rescate del balón para remontar", desc: "Min 56:24 • Rodríguez busca la pelota al fondo del arco para reiniciar deprisa." }
+        ],
+        analisis: "<strong>Pizarra Táctica (DT Alejandro Arboleda):</strong> Jugada ensayada en los entrenamientos de Ditaires. Movimiento de arrastre hacia el segundo palo que despejó la zona del primer poste para la irrupción fulminante de Cristian Rodríguez (#9). Ejecución modélica de ABP.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:20 y traza con flecha dorada la trayectoria de desmarque de Cristian Rodríguez hacia el primer palo.",
+        colorBadge: "amber"
+      },
+      clip_5: {
+        archivo: "clip_5_gol_pacheco.mp4",
+        titulo: "Clip 5 • ¡Gol del Empate Agónico! 2-2 (92:21 2T) • Léider Pacheco (#17)",
+        subtitulo: "2T • Minuto 92:21 • Desahogo histórico en el 90+3' silenciando el estadio",
+        duracion: "00:40",
+        duracionSec: 40,
+        categoria: "Épica & Definición en Reposición",
+        eventos: [
+          { sec: 0, timeStr: "00:00", icono: "⏱️", titulo: "Asedio total en el minuto 90+3'", desc: "Min 92:05 • Todo Leones volcado al ataque en campo samario buscando rescatar el punto." },
+          { sec: 14, timeStr: "00:14", icono: "💥", titulo: "Rebote disputado en el área", desc: "Min 92:19 • Balón dividido en el área chica que la defensa local no logra despejar." },
+          { sec: 16, timeStr: "00:16", icono: "⚽", titulo: "¡GOLAZO DEL EMPATE (2-2)!", desc: "Min 92:21 • Léider Pacheco (#17) remata con potencia mandando la pelota a guardar." },
+          { sec: 24, timeStr: "00:24", icono: "🎉", titulo: "Celebración y éxtasis del plantel", desc: "Min 92:29 • Carrera eufórica de Pacheco hacia la tribuna con todo el banquillo auriverde." }
+        ],
+        analisis: "<strong>Carácter y Sentido de Oportunidad:</strong> Léider Pacheco (#17) entró como revulsivo e interpretó con frialdad el segundo balón en tiempo suplementario. Este clip resume el ADN guerrero de Itagüí Leones: presionar y creer hasta el último suspiro del cronómetro.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:15 para congelar la posición del impacto y la línea de pase que habilitó el remate.",
+        colorBadge: "emerald"
+      }
+    };
+
+    // FUNCIÓN PARA CARGAR CUALQUIERA DE LOS 5 CLIPS REALES
+    function cargarClip(clipKey) {
+      const data = clipsData[clipKey];
+      if (!data) return;
+      currentClipKey = clipKey;
+
+      // Actualizar fuente del video
+      matchVideo.pause();
+      matchVideo.src = data.archivo;
+      matchVideo.load();
+      matchVideo.play();
+
+      // Actualizar encabezados y tiempos
+      document.getElementById('clipHeaderTitulo').innerText = data.titulo;
+      document.getElementById('clipHeaderSubtitulo').innerText = data.subtitulo;
+      document.getElementById('clipBadgeCategoria').innerText = data.categoria;
+      tiempoDisplay.innerText = `00:00 / ${data.duracion}`;
+
+      // Actualizar estado visual de los botones del selector de clips
+      document.querySelectorAll('.clip-card').forEach(btn => {
+        btn.classList.remove('border-emerald-500', 'bg-emerald-950/40', 'border-amber-400', 'bg-amber-950/40');
+        btn.classList.add('border-transparent', 'bg-slate-800/80');
+      });
+      const activeBtn = document.getElementById(`btn-${clipKey}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'bg-slate-800/80');
+        activeBtn.classList.add('border-emerald-500', 'bg-emerald-950/40');
+      }
+
+      // Renderizar eventos del clip en la columna derecha
+      const container = document.getElementById('eventosClipContainer');
+      container.innerHTML = '';
+      data.eventos.forEach(ev => {
+        const item = document.createElement('button');
+        item.onclick = () => saltarAVideo(ev.sec, ev.titulo);
+        item.className = 'w-full text-left p-2.5 rounded-xl bg-slate-800/60 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-400/50 transition flex items-center justify-between cursor-pointer group';
+        item.innerHTML = `
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">${ev.icono}</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300 transition">${ev.titulo}</p>
+              <p class="text-[11px] text-slate-400 leading-tight">${ev.desc}</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded ml-2 whitespace-nowrap">${ev.timeStr}</span>
+        `;
+        container.appendChild(item);
+      });
+
+      // Renderizar análisis táctico y consejo de pizarra
+      document.getElementById('clipAnalisisTexto').innerHTML = data.analisis;
+      document.getElementById('clipRecomendacionDibujo').innerHTML = data.recomendacionDibujo;
+
+      // Limpiar canvas
+      limpiarCanvas();
+    }
+
+    // Actualizar el cronómetro del video en tiempo real
+    matchVideo.addEventListener('timeupdate', () => {
+      const cur = Math.floor(matchVideo.currentTime);
+      const dur = Math.floor(matchVideo.duration || (clipsData[currentClipKey] ? clipsData[currentClipKey].duracionSec : 35));
+      const minC = Math.floor(cur / 60);
+      const secC = cur % 60;
+      const minD = Math.floor(dur / 60);
+      const secD = dur % 60;
+      tiempoDisplay.innerText = `${minC}:${secC < 10 ? '0' : ''}${secC} / ${minD}:${secD < 10 ? '0' : ''}${secD}`;
+    });
+
+    // Saltar el reproductor al segundo exacto dentro del clip
+    function saltarAVideo(segundos, nombreEvento) {
+      matchVideo.currentTime = segundos;
+      matchVideo.play();
+      console.log(`Leones FC: Saltando a ${nombreEvento} en ${segundos}s`);
+    }
+
+    // Datos de la plantilla oficial de Itagüí Leones FC (Actualizado 2026-II)
+    const jugadoresDB = {
+      restrepo_nicolas: {
+        dorsal: "24",
+        nombre: "Nicolás Restrepo",
+        posicion: "Lateral Izquierdo • Proyección Cantera Sub-20",
+        categoria: "Fuerzas Básicas • Sub-20 / Primer Equipo",
+        fisico: "Altura: 1.77 m • Peso: 71 kg",
+        antiguedad: "2021 (Desde Sub-15)",
+        rating: "8.5 / 10",
+        fechaContrato: "31/12/2027",
+        derechos: "$45,000 USD",
+        clausula: "$800,000 USD",
+        velocidad: "30.1 km/h",
+        sprint: "3.90 s",
+        clips: [
+          { clipKey: 'clip_3', titulo: "Bloque Defensivo & Cobertura de Banda", min: "Min 18:29 (1T)", desc: "Visible con el dorsal #24 en repliegue cerrado." }
+        ]
+      },
+      rodriguez: {
+        dorsal: "9",
+        nombre: "Cristian Rodríguez",
+        posicion: "Delantero Centro • Goleador Auriverde (Gol al 56:17)",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.83 m • Peso: 78 kg",
+        antiguedad: "2023",
+        rating: "8.8 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$50,000 USD",
+        clausula: "$900,000 USD",
+        velocidad: "30.4 km/h",
+        sprint: "3.88 s",
+        clips: [
+          { clipKey: 'clip_4', titulo: "¡Golazo de Cabeza en Tiro de Esquina (2-1)!", min: "Min 56:17 (2T)", desc: "Anticipación letal al primer palo inflando la red." }
+        ]
+      },
+      pacheco: {
+        dorsal: "17",
+        nombre: "Léider Pacheco",
+        posicion: "Extremo / Delantero • Gol del Empate 2-2 al 92:21",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.76 m • Peso: 70 kg",
+        antiguedad: "2024 (Retorno consolidado)",
+        rating: "8.7 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$30,000 USD",
+        clausula: "$550,000 USD",
+        velocidad: "31.8 km/h",
+        sprint: "3.80 s",
+        clips: [
+          { clipKey: 'clip_5', titulo: "¡Gol Agónico del Empate 2-2 en el 90+3'!", min: "Min 92:21 (2T)", desc: "Remate fulminante en el área para salvar el punto en Santa Marta." }
+        ]
+      },
+      figueroa: {
+        dorsal: "1",
+        nombre: "Jhon Figueroa",
+        posicion: "Arquero / Capitán • Líder del Plantel",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.88 m • Peso: 84 kg",
+        antiguedad: "2021 (Referente institucional)",
+        rating: "9.0 / 10",
+        fechaContrato: "31/12/2025",
+        derechos: "$30,000 USD",
+        clausula: "$500,000 USD",
+        velocidad: "25.2 km/h",
+        sprint: "4.30 s",
+        clips: [
+          { clipKey: 'clip_1', titulo: "Achique en Llegada por Banda (Gol 1)", min: "Min 10:58 (1T)", desc: "Intervención bajo palos y reorganización de centrales." },
+          { clipKey: 'clip_2', titulo: "Respuesta en Tiro Rasante (Gol 2)", min: "Min 14:58 (1T)", desc: "Ajuste defensivo y reclamo de marca central." }
+        ]
+      },
+      meneses: {
+        dorsal: "2",
+        nombre: "Germán Meneses",
+        posicion: "Defensa Central • Referente de Zaga",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.86 m • Peso: 81 kg",
+        antiguedad: "2022 (4 años en el club)",
+        rating: "8.6 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$40,000 USD",
+        clausula: "$600,000 USD",
+        velocidad: "29.1 km/h",
+        sprint: "3.98 s",
+        clips: [
+          { clipKey: 'clip_3', titulo: "Liderazgo en Línea de 4 Defensores", min: "Min 18:29 (1T)", desc: "Voz de mando ordenando el paso adelante de la zaga." }
+        ]
+      },
+      soto: {
+        dorsal: "18",
+        nombre: "Tomás Soto",
+        posicion: "Lateral Derecho • Proyección y Marca",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.79 m • Peso: 72 kg",
+        antiguedad: "2025 (Ex Envigado U20)",
+        rating: "8.3 / 10",
+        fechaContrato: "31/12/2027",
+        derechos: "$25,000 USD",
+        clausula: "$500,000 USD",
+        velocidad: "29.8 km/h",
+        sprint: "3.92 s",
+        clips: [
+          { clipKey: 'clip_3', titulo: "Basculación Defensiva por Carril Derecho", min: "Min 18:29 (1T)", desc: "Cierre de pasillo interno junto a los centrales." }
+        ]
+      },
+      montoya: {
+        dorsal: "10",
+        nombre: "Santiago Montoya Moreno",
+        posicion: "Volante Ofensivo • Conducción y Último Pase",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.73 m • Peso: 67 kg",
+        antiguedad: "2024",
+        rating: "8.5 / 10",
+        fechaContrato: "30/06/2026",
+        derechos: "$35,000 USD",
+        clausula: "$650,000 USD",
+        velocidad: "28.5 km/h",
+        sprint: "3.99 s",
+        clips: [
+          { clipKey: 'clip_4', titulo: "Generación Previa al Tiro de Esquina", min: "Min 56:17 (2T)", desc: "Aceleración en tres cuartos que provocó la falta/córner." }
+        ]
+      },
+      villa: {
+        dorsal: "7",
+        nombre: "David Villa",
+        posicion: "Extremo / Mediocampista • Velocidad & Desmarque",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.75 m • Peso: 69 kg",
+        antiguedad: "2023",
+        rating: "8.2 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$30,000 USD",
+        clausula: "$500,000 USD",
+        velocidad: "31.0 km/h",
+        sprint: "3.84 s",
+        clips: [
+          { clipKey: 'clip_5', titulo: "Asedio Final y Apertura a Banda", min: "Min 92:21 (2T)", desc: "Presión alta que derivó en el balón al área de Pacheco." }
+        ]
+      },
+      moreno: {
+        dorsal: "6",
+        nombre: "Jerónimo Moreno",
+        posicion: "Volante Mixto • Recuperación y Salida Limpia",
+        categoria: "Fuerzas Básicas • Sub-20 / Primer Equipo",
+        fisico: "Altura: 1.80 m • Peso: 74 kg",
+        antiguedad: "2025 (Ex CD Estudiantil)",
+        rating: "8.4 / 10",
+        fechaContrato: "31/12/2028",
+        derechos: "$40,000 USD",
+        clausula: "$750,000 USD",
+        velocidad: "29.0 km/h",
+        sprint: "3.96 s",
+        clips: [
+          { clipKey: 'clip_3', titulo: "Escalón en Doble Pivote", min: "Min 18:29 (1T)", desc: "Posicionamiento por delante de la línea de centrales." }
+        ]
+      },
+      bonilla: {
+        dorsal: "11",
+        nombre: "Juan David Bonilla",
+        posicion: "Extremo / Delantero • Desborde 1v1",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.74 m • Peso: 68 kg",
+        antiguedad: "2024",
+        rating: "8.1 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$20,000 USD",
+        clausula: "$400,000 USD",
+        velocidad: "31.2 km/h",
+        sprint: "3.82 s",
+        clips: [
+          { clipKey: 'clip_5', titulo: "Disputa Aérea en la Jugada del Empate", min: "Min 92:21 (2T)", desc: "Entrada al área arrastrando a los defensores samarios." }
+        ]
+      },
+      granados: {
+        dorsal: "8",
+        nombre: "Rafael Granados",
+        posicion: "Volante Mixto • Transición & Pegada",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.75 m • Peso: 70 kg",
+        antiguedad: "2023",
+        rating: "8.4 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$35,000 USD",
+        clausula: "$700,000 USD",
+        velocidad: "28.8 km/h",
+        sprint: "3.95 s",
+        clips: [
+          { clipKey: 'clip_4', titulo: "Ocupación de Rebote en Balón Parado", min: "Min 56:17 (2T)", desc: "Custodia de la medialuna para evitar contraataques." }
+        ]
+      },
+      urrea: {
+        dorsal: "4",
+        nombre: "Sebastián Urrea",
+        posicion: "Defensa Central • Anticipación Aérea",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.87 m • Peso: 82 kg",
+        antiguedad: "2025 (Retorno Deportivo Pereira)",
+        rating: "8.2 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$25,000 USD",
+        clausula: "$500,000 USD",
+        velocidad: "28.7 km/h",
+        sprint: "4.02 s",
+        clips: [
+          { clipKey: 'clip_3', titulo: "Estructura Defensiva Colectiva", min: "Min 18:29 (1T)", desc: "Sincronización de línea ante saque de fondo." }
+        ]
+      },
+      penaloza: {
+        dorsal: "20",
+        nombre: "Kevin Peñaloza",
+        posicion: "Delantero / Atacante de Área",
+        categoria: "Primer Equipo • Profesional",
+        fisico: "Altura: 1.81 m • Peso: 76 kg",
+        antiguedad: "2025 (Llegada fútbol internacional)",
+        rating: "8.0 / 10",
+        fechaContrato: "31/12/2026",
+        derechos: "$20,000 USD",
+        clausula: "$450,000 USD",
+        velocidad: "29.9 km/h",
+        sprint: "3.91 s",
+        clips: [
+          { clipKey: 'clip_5', titulo: "Presión Alta en Bloque Final", min: "Min 92:21 (2T)", desc: "Cierre de salida rival en los instantes decisivos." }
+        ]
+      }
+    };
+
+    function actualizarFichaJugador(key) {
+      const data = jugadoresDB[key];
+      if (!data) return;
+
+      document.getElementById('jugadorDorsalBadge').innerText = data.dorsal;
+      document.getElementById('jugadorNombre').innerText = data.nombre;
+      document.getElementById('jugadorPosicion').innerText = `${data.posicion} • Itagüí Leones F.C.`;
+      document.getElementById('jugadorCategoriaBadge').innerText = data.categoria;
+      document.getElementById('jugadorFisico').innerHTML = data.fisico;
+      document.getElementById('jugadorAntiguedad').innerHTML = `En el club desde: <strong>${data.antiguedad}</strong>`;
+      document.getElementById('jugadorRating').innerText = data.rating;
+      document.getElementById('contratoFecha').innerText = data.fechaContrato;
+      document.getElementById('derechosFIFA').innerText = data.derechos;
+      document.getElementById('jugadorVelocidad').innerText = data.velocidad;
+      document.getElementById('jugadorSprint').innerText = data.sprint;
+      document.getElementById('tituloClipsJugador').innerText = `Jugadas Reales en este Partido • ${data.nombre} (#${data.dorsal})`;
+
+      document.getElementById('dossierNombre').innerText = data.nombre;
+      document.getElementById('dossierPosicion').innerText = `${data.posicion} #${data.dorsal}`;
+
+      // Renderizar clips específicos del jugador
+      const containerClips = document.getElementById('contenedorClipsJugador');
+      containerClips.innerHTML = '';
+      if (data.clips && data.clips.length > 0) {
+        data.clips.forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-800/60 border border-slate-700 hover:border-amber-400 rounded-xl p-3.5 space-y-2.5 transition cursor-pointer group';
+          card.onclick = () => {
+            cambiarVista('video');
+            cargarClip(c.clipKey);
+          };
+          card.innerHTML = `
+            <div class="aspect-video bg-slate-950 rounded-lg flex items-center justify-center text-slate-500 font-mono text-xs relative overflow-hidden group-hover:bg-emerald-950/60 transition">
+              <span class="text-3xl group-hover:scale-125 transition">▶️</span>
+              <span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[11px] text-amber-400 font-mono font-bold">${c.min}</span>
+            </div>
+            <p class="text-xs font-black text-white group-hover:text-amber-400 transition">${c.titulo}</p>
+            <p class="text-[11px] text-slate-400 leading-tight">${c.desc}</p>
+            <span class="inline-block text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Abrir en Pizarra Táctica ➔</span>
+          `;
+          containerClips.appendChild(card);
+        });
+      } else {
+        containerClips.innerHTML = `
+          <div class="col-span-3 p-4 bg-slate-800/40 rounded-xl text-center text-xs text-slate-400">
+            Participación registrada en el bloque táctico general del partido.
+          </div>
+        `;
+      }
+    }
+
+    // Canvas interactivo de dibujo táctico (Telestration sobre Video Real)
+    const canvas = document.getElementById('tacticalCanvas');
+    const ctx = canvas.getContext('2d');
+    let dibujando = false;
+    let modoDibujo = false;
+    let currentColor = '#f59e0b';
+
+    function initCanvas() {
+      const container = canvas.parentElement;
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = currentColor;
+    }
+
+    window.addEventListener('resize', initCanvas);
+    document.addEventListener('DOMContentLoaded', () => {
+      initCanvas();
+      cargarClip('clip_3'); // Carga inicial por defecto con el bloque táctico
+      actualizarFichaJugador('restrepo_nicolas');
+    });
+
+    // Activar o desactivar modo pizarra
+    function toggleModoDibujo() {
+      modoDibujo = !modoDibujo;
+      const tools = document.getElementById('herramientasDibujo');
+      const btn = document.getElementById('btnModoDibujo');
+      const text = document.getElementById('dibujoText');
+
+      if (modoDibujo) {
+        matchVideo.pause(); // Pausar video automáticamente para dibujar sobre el frame
+        initCanvas();
+        canvas.classList.remove('hidden');
+        tools.classList.remove('hidden');
+        btn.classList.add('bg-amber-400', 'text-slate-950');
+        btn.classList.remove('bg-amber-500/20', 'text-amber-400');
+        text.innerText = 'Desactivar Pizarra';
+      } else {
+        canvas.classList.add('hidden');
+        tools.classList.add('hidden');
+        btn.classList.remove('bg-amber-400', 'text-slate-950');
+        btn.classList.add('bg-amber-500/20', 'text-amber-400');
+        text.innerText = 'Activar Pizarra Táctica';
+      }
+    }
+
+    // Obtener coordenadas normalizadas (Mouse o Touch en móvil)
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      if (!modoDibujo) return;
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
+      dibujando = true;
+      const coords = getCanvasCoords(e);
+      ctx.beginPath();
+      ctx.moveTo(coords.x, coords.y);
+    }
+
+    function draw(e) {
+      if (!dibujando || !modoDibujo) return;
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
+      const coords = getCanvasCoords(e);
+      ctx.lineTo(coords.x, coords.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      dibujando = false;
+    }
+
+    // Eventos Mouse
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Eventos Touch (Celulares y Tablets iOS / Android)
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
+
+    function setColor(color) {
+      currentColor = color;
+      ctx.strokeStyle = color;
+    }
+
+    function limpiarCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function generarMicroClip() {
+      alert("⚡ Micro-Clip recortado con los trazos tácticos de Ditaires.\n\nListo para enviar directamente al WhatsApp del cuerpo técnico.");
+    }
+
+    function cambiarVista(vista) {
+      document.getElementById('vista-video').classList.add('hidden');
+      document.getElementById('vista-ficha').classList.add('hidden');
+      document.getElementById('vista-medicina').classList.add('hidden');
+
+      document.getElementById('tab-video').classList.remove('text-amber-400', 'border-amber-400');
+      document.getElementById('tab-ficha').classList.remove('text-amber-400', 'border-amber-400');
+      document.getElementById('tab-medicina').classList.remove('text-amber-400', 'border-amber-400');
+
+      document.getElementById(`vista-${vista}`).classList.remove('hidden');
+      document.getElementById(`tab-${vista}`).classList.add('text-amber-400', 'border-amber-400');
+      
+      if (vista === 'video') {
+        setTimeout(initCanvas, 100);
+      }
+    }
+
+    function generarDossierModal() {
+      document.getElementById('dossierModal').classList.remove('hidden');
+    }
+
+    function cerrarDossierModal() {
+      document.getElementById('dossierModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
