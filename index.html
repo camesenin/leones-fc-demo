@@ -17,6 +17,47 @@
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
+      overflow: hidden;
+    }
+    .video-wrapper.is-fullscreen-css {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      z-index: 999999 !important;
+      background: #000 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .video-wrapper:fullscreen,
+    .video-wrapper:-webkit-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      background: #000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .video-wrapper:fullscreen video,
+    .video-wrapper:-webkit-full-screen video,
+    .video-wrapper.is-fullscreen-css video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .video-wrapper:fullscreen canvas,
+    .video-wrapper:-webkit-full-screen canvas,
+    .video-wrapper.is-fullscreen-css canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .canvas-overlay {
       position: absolute;
@@ -238,19 +279,34 @@
             </div>
 
             <!-- CONTENEDOR DEL VIDEO REAL Y CANVAS DE DIBUJO -->
-            <div class="video-wrapper">
+            <div class="video-wrapper group">
               <video id="matchVideo" class="w-full h-full object-contain" controls playsinline preload="auto">
                 <source id="videoSource" src="clip_3_bloque_restrepo.mp4" type="video/mp4">
                 Tu navegador no soporta video MP4 nativo.
               </video>
 
               <!-- Canvas transparente para dibujo táctico (pointer-events-none en visualización) -->
-              <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-none"></canvas>
+              <canvas id="tacticalCanvas" class="canvas-overlay pointer-events-none"></canvas>
 
-              <!-- Mini badge sutil en esquina del video (NO obstruye el campo) -->
-              <div id="telestrationMiniBadge" class="hidden absolute top-2.5 left-2.5 bg-slate-950/85 backdrop-blur-md border border-amber-400/80 px-2.5 py-1 rounded-full text-[10px] font-black text-amber-300 flex items-center space-x-1.5 shadow-lg z-30 pointer-events-none">
+              <!-- CONTROLES FLOTANTES TÁCTICOS EN VIDEO (VISIBLES EN PANTALLA NORMAL Y MAXIMIZADA) -->
+              <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-30 pointer-events-auto">
+                <!-- Botón Encender / Apagar Trazos Tácticos Dinámicos -->
+                <button type="button" id="btnToggleTrazosFloating" onclick="toggleTrazosDinamicos()" class="bg-slate-950/85 hover:bg-slate-900 border border-emerald-400/80 px-2.5 py-1 rounded-full text-[11px] font-black text-emerald-300 flex items-center space-x-1.5 shadow-xl cursor-pointer backdrop-blur-md transition active:scale-95">
+                  <span id="trazosDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span id="trazosFloatingLabel">🎯 Trazos: ACTIVADOS</span>
+                </button>
+
+                <!-- Botón Maximizar / Pantalla Completa (Preserva trazos y sincronía) -->
+                <button type="button" id="btnMaximizarVideo" onclick="toggleFullscreen()" class="bg-slate-950/85 hover:bg-slate-900 border border-amber-400/80 px-2.5 py-1 rounded-full text-[11px] font-black text-amber-300 flex items-center space-x-1.5 shadow-xl cursor-pointer backdrop-blur-md transition active:scale-95">
+                  <span id="fsIcon">⛶</span>
+                  <span id="fsText">Maximizar</span>
+                </button>
+              </div>
+
+              <!-- Mini badge sutil en esquina del video -->
+              <div id="telestrationMiniBadge" class="absolute bottom-12 left-3 bg-slate-950/85 backdrop-blur-md border border-amber-400/80 px-2.5 py-1 rounded-full text-[9px] font-black text-amber-300 flex items-center space-x-1.5 shadow-lg z-30 pointer-events-none">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                <span>✨ IA BROADCAST • TELESTRATION</span>
+                <span>✨ IA BROADCAST • TRACKING DINÁMICO</span>
               </div>
             </div>
 
@@ -284,10 +340,16 @@
             <!-- BARRA DE HERRAMIENTAS TÁCTICAS -->
             <div class="p-3 sm:p-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 text-xs">
               <div class="flex items-center space-x-2 flex-wrap gap-y-1.5">
-                <!-- Botón Telestration IA Rápido -->
-                <button type="button" id="btnTelestrationIA" onclick="triggerTelestrationActual()" class="px-3 py-1.5 bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-amber-500/20 hover:from-amber-500/30 text-amber-300 border border-amber-400/60 rounded-lg font-black flex items-center space-x-1.5 cursor-pointer transition shadow-md">
-                  <span class="text-sm">✨</span>
-                  <span>Telestration IA Automático</span>
+                <!-- Botón Toggle Trazos Dinámicos Principal -->
+                <button type="button" id="btnToggleTrazosBar" onclick="toggleTrazosDinamicos()" class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/60 rounded-lg font-black flex items-center space-x-1.5 cursor-pointer transition shadow-md">
+                  <span id="trazosBarIcon">🎯</span>
+                  <span id="trazosBarLabel">Trazos Tácticos Dinámicos: ACTIVADOS</span>
+                </button>
+
+                <!-- Botón Maximizar en Barra -->
+                <button type="button" id="btnMaximizarBar" onclick="toggleFullscreen()" class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/60 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition shadow-md">
+                  <span id="fsBarIcon">⛶</span>
+                  <span id="fsBarText">Maximizar Video</span>
                 </button>
 
                 <button id="btnModoDibujo" onclick="toggleModoDibujo()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition">
@@ -790,7 +852,134 @@
         ],
         analisis: "<strong>Dictamen Táctico de Jack Bedoya & DT Arboleda:</strong> Gol concedido por falta de basculación a tiempo del lateral opuesto al viaje del balón. Es el clip formativo esencial para mostrar a los defensas juveniles de Ditaires la necesidad de sincronizar el paso adelante para dejar al delantero en fuera de juego o cerrar la diagonal interior.",
         recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:11 para ver el Telestration IA automático del desfase defensivo.",
-        colorBadge: "rose"
+        colorBadge: "rose",
+        trackingKeyframes: [
+          {
+            sec: 0,
+            connectedGroups: [
+              {
+                tipo: 'ataque_banda',
+                color: '#f59e0b',
+                dash: [6, 4],
+                label: "Tándem Ofensivo Rival",
+                jugadores: [
+                  { x: 68.0, y: 50.0, color: '#38bdf8', label: "Lateral Samario", sub: "Unión" },
+                  { x: 76.0, y: 54.0, color: '#f59e0b', label: "Extremo", sub: "Avance libre" }
+                ]
+              },
+              {
+                tipo: 'linea_zaga',
+                color: '#10b981',
+                label: "Basculación Defensiva",
+                jugadores: [
+                  { x: 28.0, y: 54.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 44.0, y: 56.0, color: '#10b981', label: "Central", sub: "Leones" },
+                  { x: 68.0, y: 59.0, color: '#10b981', label: "Lateral Izq", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 7,
+            connectedGroups: [
+              {
+                tipo: 'ataque_banda',
+                color: '#f59e0b',
+                dash: [6, 4],
+                label: "Tándem Ofensivo Rival",
+                jugadores: [
+                  { x: 72.0, y: 53.0, color: '#38bdf8', label: "Lateral Samario", sub: "Unión" },
+                  { x: 80.0, y: 56.5, color: '#f59e0b', label: "Extremo", sub: "Avance libre" }
+                ]
+              },
+              {
+                tipo: 'linea_zaga',
+                color: '#10b981',
+                brechaIndex: 1,
+                brechaLabel: "⚠️ Desfase: 11.8 m",
+                jugadores: [
+                  { x: 32.0, y: 55.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 48.0, y: 57.0, color: '#10b981', label: "Central", sub: "Leones" },
+                  { x: 72.0, y: 61.0, color: '#ef4444', label: "Lateral Izq", sub: "Desfase" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 11,
+            connectedGroups: [
+              {
+                tipo: 'linea_zaga',
+                color: '#10b981',
+                brechaIndex: 1,
+                brechaLabel: "⚠️ Desfase: 14.2 m",
+                jugadores: [
+                  { x: 34.0, y: 56.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 50.0, y: 57.5, color: '#10b981', label: "Central", sub: "Leones" },
+                  { x: 74.0, y: 62.0, color: '#ef4444', label: "Lateral Izq", sub: "Desfasado 2.1 m" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 38.0, y: 52.0, radius: 26, color: '#ef4444', label: "Freddy Molina (#9)", sub: "Ataque al segundo palo" }
+            ],
+            lineas: [
+              { x1: 74.0, y1: 55.0, x2: 40.0, y2: 53.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de centro" }
+            ]
+          },
+          {
+            sec: 15,
+            spots: [
+              { x: 40.0, y: 54.0, radius: 26, color: '#ef4444', label: "Freddy Molina (#9)", sub: "Ataque al segundo palo" },
+              { x: 46.0, y: 52.0, radius: 20, color: '#f59e0b', label: "Jhon Figueroa (#1)", sub: "Achique portería" }
+            ],
+            lineas: [
+              { x1: 40.0, y1: 54.0, x2: 46.0, y2: 51.5, color: '#ef4444', dash: [], arrow: true, label: "Remate al palo" }
+            ]
+          },
+          {
+            sec: 18,
+            spots: [
+              { x: 42.0, y: 56.0, radius: 26, color: '#ef4444', label: "F. Molina (#9)", sub: "Definición 1-0" },
+              { x: 48.0, y: 52.0, radius: 20, color: '#f59e0b', label: "Jhon Figueroa (#1)", sub: "Achique portería" }
+            ],
+            lineas: [
+              { x1: 42.0, y1: 56.0, x2: 47.0, y2: 51.0, color: '#ef4444', dash: [], arrow: true, label: "Remate al palo" }
+            ]
+          },
+          {
+            sec: 25,
+            connectedGroups: [
+              {
+                tipo: 'linea_reorganizada',
+                color: '#10b981',
+                label: "🛡️ Línea Defensiva Reorganizada",
+                jugadores: [
+                  { x: 30.0, y: 64.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 44.0, y: 64.0, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 58.0, y: 64.0, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 72.0, y: 64.0, color: '#10b981', label: "Lateral Izq", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 35,
+            connectedGroups: [
+              {
+                tipo: 'linea_reorganizada',
+                color: '#10b981',
+                label: "🛡️ Línea Defensiva Reorganizada",
+                jugadores: [
+                  { x: 28.0, y: 63.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 42.0, y: 63.0, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 56.0, y: 63.0, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 70.0, y: 63.0, color: '#10b981', label: "Lateral Izq", sub: "Leones" }
+                ]
+              }
+            ]
+          }
+        ]
       },
       clip_2: {
         archivo: "clip_2_gol2_rival.mp4",
@@ -907,7 +1096,107 @@
         ],
         analisis: "<strong>Dictamen Táctico:</strong> Desorganización tras pérdida en zona de gestación. Permite evaluar la importancia de la 'falta táctica preventiva' antes de que el adversario pise la medialuna con panorama de tiro libre.",
         recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:12 para ver el Telestration IA automático del quiebre central.",
-        colorBadge: "rose"
+        colorBadge: "rose",
+        trackingKeyframes: [
+          {
+            sec: 0,
+            connectedGroups: [
+              {
+                tipo: 'transicion_negativa',
+                color: '#ef4444',
+                dash: [6, 4],
+                label: "Pérdida & Presión Rival",
+                jugadores: [
+                  { x: 48.0, y: 60.0, color: '#ef4444', label: "Pérdida en Salida", sub: "Leones" },
+                  { x: 58.0, y: 64.0, color: '#38bdf8', label: "Recuperador Samario", sub: "Unión" }
+                ]
+              }
+            ],
+            lineas: [
+              { x1: 58.0, y1: 64.0, x2: 42.0, y2: 70.0, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pase de contragolpe" }
+            ]
+          },
+          {
+            sec: 7,
+            connectedGroups: [
+              {
+                tipo: 'bloque_central',
+                color: '#10b981',
+                jugadores: [
+                  { x: 42.0, y: 58.0, color: '#ef4444', label: "Central Izquierdo", sub: "Leones" },
+                  { x: 65.0, y: 57.5, color: '#ef4444', label: "Central Derecho", sub: "Leones" },
+                  { x: 88.0, y: 53.0, color: '#10b981', label: "Lateral Derecho", sub: "Leones" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 56.0, y: 56.0, radius: 28, color: '#f59e0b', label: "Manuel Ballesteros", sub: "Conducción central" }
+            ],
+            lineas: [
+              { x1: 56.0, y1: 56.0, x2: 51.5, y2: 52.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Ataque frontal" }
+            ]
+          },
+          {
+            sec: 12,
+            connectedGroups: [
+              {
+                tipo: 'bloque_central',
+                color: '#10b981',
+                brechaIndex: 0,
+                brechaLabel: "⚠️ Brecha Central: 12.8 m",
+                jugadores: [
+                  { x: 39.5, y: 57.1, color: '#ef4444', label: "Central Izquierdo", sub: "Leones F.C." },
+                  { x: 62.9, y: 56.5, color: '#ef4444', label: "Central Derecho", sub: "Leones F.C." },
+                  { x: 87.3, y: 52.2, color: '#10b981', label: "Lateral Derecho", sub: "Leones F.C." }
+                ]
+              }
+            ],
+            spots: [
+              { x: 51.5, y: 52.0, radius: 28, color: '#f59e0b', label: "Manuel Ballesteros", sub: "Quiebre y remate" }
+            ],
+            lineas: [
+              { x1: 51.5, y1: 52.0, x2: 44.0, y2: 60.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria remate" }
+            ]
+          },
+          {
+            sec: 18,
+            spots: [
+              { x: 52.0, y: 62.0, radius: 26, color: '#f59e0b', label: "M. Ballesteros", sub: "Remate ajustado" },
+              { x: 40.0, y: 54.0, radius: 22, color: '#ef4444', label: "Jhon Figueroa (#1)", sub: "Estirada" }
+            ],
+            lineas: [
+              { x1: 52.0, y1: 62.0, x2: 44.0, y2: 52.0, color: '#f59e0b', dash: [], arrow: true, label: "Trayectoria rasante" }
+            ]
+          },
+          {
+            sec: 26,
+            connectedGroups: [
+              {
+                tipo: 'pivotes',
+                color: '#10b981',
+                label: "Doble Pivote Ajustado (≤ 8 m)",
+                jugadores: [
+                  { x: 44.0, y: 60.0, color: '#10b981', label: "Pivote 1", sub: "Leones" },
+                  { x: 56.0, y: 60.0, color: '#10b981', label: "Pivote 2", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 35,
+            connectedGroups: [
+              {
+                tipo: 'pivotes',
+                color: '#10b981',
+                label: "Doble Pivote Ajustado (≤ 8 m)",
+                jugadores: [
+                  { x: 42.0, y: 58.0, color: '#10b981', label: "Pivote 1", sub: "Leones" },
+                  { x: 54.0, y: 58.0, color: '#10b981', label: "Pivote 2", sub: "Leones" }
+                ]
+              }
+            ]
+          }
+        ]
       },
       clip_3: {
         archivo: "clip_3_bloque_restrepo.mp4",
@@ -1037,7 +1326,148 @@
         ],
         analisis: "<strong>Evaluación Individual (Nicolás Restrepo #24):</strong> Gran rigor táctico del lateral canterano de la Sub-20. Mantiene la distancia de seguridad con el defensa central, cierra el pase entre líneas y obliga al rival al pelotazo forzado.",
         recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:14 para ver los círculos tácticos y la línea de 4 conectando a Nicolás Restrepo #24.",
-        colorBadge: "emerald"
+        colorBadge: "emerald",
+        trackingKeyframes: [
+          {
+            sec: 0,
+            connectedGroups: [
+              {
+                tipo: 'salida_rival',
+                color: '#38bdf8',
+                label: "Salida Corta Unión Magdalena",
+                jugadores: [
+                  { x: 39.0, y: 50.0, color: '#38bdf8', label: "Central 1", sub: "Unión" },
+                  { x: 59.0, y: 49.0, color: '#38bdf8', label: "Central 2", sub: "Unión" },
+                  { x: 82.0, y: 50.0, color: '#38bdf8', label: "Lateral", sub: "Unión" }
+                ]
+              },
+              {
+                tipo: 'presion_leones',
+                color: '#f59e0b',
+                label: "Presión Alta Auriverde",
+                jugadores: [
+                  { x: 77.0, y: 48.0, color: '#f59e0b', label: "Delantero 1", sub: "Leones" },
+                  { x: 93.0, y: 46.0, color: '#f59e0b', label: "Delantero 2", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 6,
+            connectedGroups: [
+              {
+                tipo: 'salida_rival',
+                color: '#38bdf8',
+                label: "Salida Unión",
+                jugadores: [
+                  { x: 41.0, y: 52.0, color: '#38bdf8', label: "Central 1", sub: "Unión" },
+                  { x: 61.0, y: 51.0, color: '#38bdf8', label: "Central 2", sub: "Unión" },
+                  { x: 81.0, y: 52.0, color: '#38bdf8', label: "Lateral", sub: "Unión" }
+                ]
+              },
+              {
+                tipo: 'presion_leones',
+                color: '#f59e0b',
+                label: "Presión Leones",
+                jugadores: [
+                  { x: 72.0, y: 49.0, color: '#f59e0b', label: "Delantero 1", sub: "Leones" },
+                  { x: 88.0, y: 48.0, color: '#f59e0b', label: "Delantero 2", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 10,
+            connectedGroups: [
+              {
+                tipo: 'linea_defensiva',
+                color: '#10b981',
+                label: "🛡️ Línea Defensiva de 4 (Sincronizada)",
+                jugadores: [
+                  { x: 42.0, y: 67.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 56.0, y: 64.0, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 70.0, y: 63.0, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 83.0, y: 80.0, color: '#f59e0b', label: "Nicolás Restrepo (#24)", sub: "Lateral Cantera Sub-20" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 14,
+            connectedGroups: [
+              {
+                tipo: 'linea_defensiva',
+                color: '#10b981',
+                label: "🛡️ Línea Defensiva de 4 (Sincronizada)",
+                jugadores: [
+                  { x: 44.5, y: 68.7, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 58.5, y: 65.1, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 72.8, y: 64.4, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 85.9, y: 83.8, color: '#f59e0b', label: "Nicolás Restrepo (#24)", sub: "Lateral Cantera Sub-20" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 22,
+            connectedGroups: [
+              {
+                tipo: 'linea_defensiva',
+                color: '#10b981',
+                label: "Línea de 4 Defensores",
+                jugadores: [
+                  { x: 44.5, y: 68.7, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 58.5, y: 65.1, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 72.8, y: 64.4, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 85.9, y: 83.8, color: '#f59e0b', label: "Restrepo #24", sub: "Leones" }
+                ]
+              },
+              {
+                tipo: 'linea_medios',
+                color: '#f59e0b',
+                label: "Línea de 4 Mediocampistas",
+                jugadores: [
+                  { x: 40.0, y: 49.0, color: '#f59e0b', label: "Volante Der", sub: "Leones" },
+                  { x: 53.0, y: 47.0, color: '#f59e0b', label: "Pivote 1", sub: "Leones" },
+                  { x: 67.0, y: 46.0, color: '#f59e0b', label: "Pivote 2", sub: "Leones" },
+                  { x: 80.0, y: 44.0, color: '#f59e0b', label: "Volante Izq", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 27,
+            connectedGroups: [
+              {
+                tipo: 'linea_defensiva',
+                color: '#10b981',
+                label: "Línea Defensiva Adelantada",
+                jugadores: [
+                  { x: 41.0, y: 65.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                  { x: 55.0, y: 62.0, color: '#10b981', label: "Central Der", sub: "Leones" },
+                  { x: 69.0, y: 61.0, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                  { x: 82.0, y: 78.0, color: '#f59e0b', label: "Restrepo #24", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 31,
+            spots: [
+              { x: 65.0, y: 45.0, radius: 24, color: '#38bdf8', label: "Tasso (Arquero Unión)", sub: "Balonazo forzado" },
+              { x: 35.0, y: 65.0, radius: 26, color: '#10b981', label: "Recuperación Leones", sub: "Bloque cerrado" }
+            ],
+            lineas: [
+              { x1: 65.0, y1: 45.0, x2: 35.0, y2: 65.0, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pelotazo forzado al vacío" }
+            ]
+          },
+          {
+            sec: 35,
+            spots: [
+              { x: 34.0, y: 64.0, radius: 26, color: '#10b981', label: "Recuperación Leones", sub: "Posesión Asegurada" }
+            ]
+          }
+        ]
       },
       clip_4: {
         archivo: "clip_4_gol_rodriguez.mp4",
@@ -1134,7 +1564,83 @@
         ],
         analisis: "<strong>Pizarra Táctica (DT Alejandro Arboleda):</strong> Jugada ensayada en los entrenamientos de Ditaires. Movimiento de arrastre hacia el segundo palo que despejó la zona del primer poste para la irrupción fulminante de Cristian Rodríguez (#9). Ejecución modélica de ABP.",
         recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:25 para ver el Telestration IA automático del cabezazo de Cristian Rodríguez #9.",
-        colorBadge: "amber"
+        colorBadge: "amber",
+        trackingKeyframes: [
+          {
+            sec: 0,
+            connectedGroups: [
+              {
+                tipo: 'bloque_cabeceadores',
+                color: '#f59e0b',
+                dash: [4, 4],
+                label: "Bloque de Cabeceadores Leones",
+                jugadores: [
+                  { x: 52.0, y: 52.0, color: '#f59e0b', label: "Cabeceador 1", sub: "Arrastre" },
+                  { x: 62.0, y: 50.0, color: '#f59e0b', label: "Cabeceador 2", sub: "Arrastre" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 12,
+            connectedGroups: [
+              {
+                tipo: 'bloque_cabeceadores',
+                color: '#f59e0b',
+                dash: [4, 4],
+                label: "Arrastre al 2° Palo",
+                jugadores: [
+                  { x: 56.0, y: 49.0, color: '#f59e0b', label: "Cabeceador 1", sub: "Arrastre" },
+                  { x: 65.0, y: 48.0, color: '#f59e0b', label: "Cabeceador 2", sub: "Arrastre" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 54.0, y: 54.0, radius: 26, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Inicio de carrera" }
+            ]
+          },
+          {
+            sec: 18,
+            spots: [
+              { x: 50.0, y: 52.0, radius: 26, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Ataque al 1° palo" }
+            ],
+            lineas: [
+              { x1: 15.0, y1: 72.0, x2: 48.0, y2: 52.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de rosca" }
+            ]
+          },
+          {
+            sec: 25,
+            connectedGroups: [
+              {
+                tipo: 'defensa_rival',
+                color: '#ef4444',
+                label: "Marcaje Doble Superado",
+                jugadores: [
+                  { x: 44.0, y: 53.0, color: '#ef4444', label: "Central Rival", sub: "Unión" },
+                  { x: 53.0, y: 52.0, color: '#ef4444', label: "Líbero Rival", sub: "Unión" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 48.0, y: 50.0, radius: 28, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Anticipación y ¡Gol!" }
+            ],
+            lineas: [
+              { x1: 48.0, y1: 50.0, x2: 56.0, y2: 44.0, color: '#10b981', dash: [], arrow: true, label: "Cabezazo a la red" }
+            ]
+          },
+          {
+            sec: 32,
+            spots: [
+              { x: 52.0, y: 46.0, radius: 26, color: '#f59e0b', label: "C. Rodríguez (#9)", sub: "Rescate del Balón" }
+            ]
+          },
+          {
+            sec: 40,
+            spots: [
+              { x: 46.0, y: 54.0, radius: 24, color: '#10b981', label: "Reinicio Rápido", sub: "Búsqueda del Empate" }
+            ]
+          }
+        ]
       },
       clip_5: {
         archivo: "clip_5_gol_pacheco.mp4",
@@ -1229,7 +1735,89 @@
         ],
         analisis: "<strong>Carácter y Sentido de Oportunidad:</strong> Léider Pacheco (#17) entró como revulsivo e interpretó con frialdad el segundo balón en tiempo suplementario. Este clip resume el ADN guerrero de Itagüí Leones: presionar y creer hasta el último suspiro del cronómetro.",
         recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:16 para ver los círculos tácticos y la definición de Léider Pacheco #17.",
-        colorBadge: "emerald"
+        colorBadge: "emerald",
+        trackingKeyframes: [
+          {
+            sec: 0,
+            connectedGroups: [
+              {
+                tipo: 'asedio_leones',
+                color: '#10b981',
+                label: "Asedio Ofensivo (7 jugadores en área)",
+                jugadores: [
+                  { x: 45.0, y: 56.0, color: '#10b981', label: "Volante", sub: "Leones" },
+                  { x: 55.0, y: 58.0, color: '#10b981', label: "Delantero", sub: "Leones" },
+                  { x: 65.0, y: 55.0, color: '#10b981', label: "Extremo", sub: "Leones" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 10,
+            connectedGroups: [
+              {
+                tipo: 'rechazo_union',
+                color: '#38bdf8',
+                label: "Despeje defectuoso local",
+                jugadores: [
+                  { x: 48.0, y: 54.0, color: '#38bdf8', label: "Central", sub: "Unión" },
+                  { x: 58.0, y: 55.0, color: '#38bdf8', label: "Lateral", sub: "Unión" }
+                ]
+              }
+            ]
+          },
+          {
+            sec: 14,
+            connectedGroups: [
+              {
+                tipo: 'rebote_vivo',
+                color: '#38bdf8',
+                label: "Zaga Samaria Desarticulada",
+                jugadores: [
+                  { x: 42.0, y: 52.0, color: '#38bdf8', label: "Arquero Tasso", sub: "Unión" },
+                  { x: 48.0, y: 56.0, color: '#38bdf8', label: "Defensor Samario", sub: "Unión" },
+                  { x: 62.0, y: 54.0, color: '#38bdf8', label: "Rebote Vivo", sub: "Área Chica" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 64.0, y: 60.0, radius: 26, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "Carrera a remate" }
+            ]
+          },
+          {
+            sec: 16,
+            connectedGroups: [
+              {
+                tipo: 'remate_agonico',
+                color: '#38bdf8',
+                dash: [4, 4],
+                label: "Zaga Batida Unión Magdalena",
+                jugadores: [
+                  { x: 42.0, y: 52.0, color: '#38bdf8', label: "Tasso (Arquero)", sub: "Batido" },
+                  { x: 48.0, y: 56.0, color: '#38bdf8', label: "Defensor 1", sub: "Superado" }
+                ]
+              }
+            ],
+            spots: [
+              { x: 54.0, y: 58.0, radius: 28, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "¡Gol del Empate 2-2 en el 90+3'!" }
+            ],
+            lineas: [
+              { x1: 54.0, y1: 58.0, x2: 43.0, y2: 48.0, color: '#10b981', dash: [], arrow: true, label: "Disparo a la red (90+3')" }
+            ]
+          },
+          {
+            sec: 24,
+            spots: [
+              { x: 78.0, y: 72.0, radius: 28, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "¡Éxtasis Auriverde!" }
+            ]
+          },
+          {
+            sec: 40,
+            spots: [
+              { x: 80.0, y: 75.0, radius: 26, color: '#10b981', label: "Festejo Final", sub: "Punto de Oro 2-2" }
+            ]
+          }
+        ]
       }
     };
 
@@ -1241,10 +1829,9 @@
 
       // Actualizar fuente del video
       matchVideo.pause();
-      limpiarTelestration(false);
       matchVideo.src = data.archivo;
       matchVideo.load();
-      matchVideo.play();
+      matchVideo.play().catch(e => console.warn("Video play error:", e));
 
       // Actualizar encabezados y tiempos
       document.getElementById('clipHeaderTitulo').innerText = data.titulo;
@@ -1589,30 +2176,749 @@
       }
     }
 
-    // Canvas interactivo de dibujo táctico (Telestration sobre Video Real)
+    // ========================================================
+    // MOTOR DE TELESTRATION TÁCTICO DINÁMICO & PANTALLA COMPLETA
+    // ========================================================
     const canvas = document.getElementById('tacticalCanvas');
     const ctx = canvas.getContext('2d');
     let dibujando = false;
     let modoDibujo = false;
     let currentColor = '#f59e0b';
+    let trazosDinamicosActivos = true; // Activo por defecto para visualización inmediata
+    let animFrameId = null;
+    let modoTelestrationActivo = true;
+    let currentEventIdx = 0;
+
+    // Calcular el rectángulo exacto donde se renderiza el video 16:9 dentro del contenedor
+    function getVideoRenderRect() {
+      const wrapper = canvas.parentElement || document.querySelector('.video-wrapper');
+      if (!wrapper) return { w: canvas.width, h: canvas.height, x: 0, y: 0 };
+      
+      const cw = wrapper.clientWidth;
+      const ch = wrapper.clientHeight;
+      const vw = matchVideo.videoWidth || 16;
+      const vh = matchVideo.videoHeight || 9;
+      const videoAspect = vw / vh;
+      const containerAspect = cw / ch;
+
+      let renderW, renderH, offsetX, offsetY;
+      if (containerAspect > videoAspect) {
+        // Barras negras a los lados (ej. celular en horizontal ultrawide)
+        renderH = ch;
+        renderW = ch * videoAspect;
+        offsetX = (cw - renderW) / 2;
+        offsetY = 0;
+      } else {
+        // Barras negras arriba/abajo (ej. celular vertical)
+        renderW = cw;
+        renderH = cw / videoAspect;
+        offsetX = 0;
+        offsetY = (ch - renderH) / 2;
+      }
+      return { w: renderW, h: renderH, x: offsetX, y: offsetY };
+    }
 
     function initCanvas() {
-      const container = canvas.parentElement;
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
+      const wrapper = canvas.parentElement || document.querySelector('.video-wrapper');
+      if (!wrapper) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = wrapper.clientWidth;
+      const h = wrapper.clientHeight;
+
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.strokeStyle = currentColor;
     }
 
-    window.addEventListener('resize', initCanvas);
+    window.addEventListener('resize', () => {
+      initCanvas();
+      if (trazosDinamicosActivos) actualizarTelestrationFrame();
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
       initCanvas();
       cargarClip('clip_3'); // Carga inicial por defecto con el bloque táctico
       actualizarFichaJugador('restrepo_nicolas');
+      actualizarUITrazos();
+      startDynamicTrackingLoop();
     });
 
-    // Activar o desactivar modo pizarra
+    // ========================================================
+    // CONTROL DE PANTALLA COMPLETA (PRESERVA TRAZOS Y ALINEACIÓN)
+    // ========================================================
+    function toggleFullscreen() {
+      const wrapper = document.querySelector('.video-wrapper');
+      if (!wrapper) return;
+
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || wrapper.classList.contains('is-fullscreen-css');
+
+      if (!isFs) {
+        if (wrapper.requestFullscreen) {
+          wrapper.requestFullscreen().then(() => {
+            actualizarUIFullscreen(true);
+          }).catch(err => {
+            console.warn("Fullscreen request error, usando fallback CSS:", err);
+            wrapper.classList.add('is-fullscreen-css');
+            document.body.style.overflow = 'hidden';
+            actualizarUIFullscreen(true);
+          });
+        } else if (wrapper.webkitRequestFullscreen) {
+          wrapper.webkitRequestFullscreen();
+          actualizarUIFullscreen(true);
+        } else {
+          wrapper.classList.add('is-fullscreen-css');
+          document.body.style.overflow = 'hidden';
+          actualizarUIFullscreen(true);
+        }
+      } else {
+        if (wrapper.classList.contains('is-fullscreen-css')) {
+          wrapper.classList.remove('is-fullscreen-css');
+          document.body.style.overflow = '';
+          actualizarUIFullscreen(false);
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => {
+            actualizarUIFullscreen(false);
+          }).catch(e => console.warn(e));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+          actualizarUIFullscreen(false);
+        } else {
+          actualizarUIFullscreen(false);
+        }
+      }
+    }
+
+    function actualizarUIFullscreen(isFs) {
+      const fsIcon = document.getElementById('fsIcon');
+      const fsText = document.getElementById('fsText');
+      const fsBarIcon = document.getElementById('fsBarIcon');
+      const fsBarText = document.getElementById('fsBarText');
+
+      if (isFs) {
+        if (fsIcon) fsIcon.innerText = '✕';
+        if (fsText) fsText.innerText = 'Restaurar';
+        if (fsBarIcon) fsBarIcon.innerText = '✕';
+        if (fsBarText) fsBarText.innerText = 'Restaurar Tamaño';
+      } else {
+        if (fsIcon) fsIcon.innerText = '⛶';
+        if (fsText) fsText.innerText = 'Maximizar';
+        if (fsBarIcon) fsBarIcon.innerText = '⛶';
+        if (fsBarText) fsBarText.innerText = 'Maximizar Video';
+      }
+
+      setTimeout(() => {
+        initCanvas();
+        if (trazosDinamicosActivos) {
+          actualizarTelestrationFrame();
+        }
+      }, 150);
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      actualizarUIFullscreen(!!document.fullscreenElement);
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+      actualizarUIFullscreen(!!document.webkitFullscreenElement);
+    });
+
+    // ========================================================
+    // TOGGLE ON / OFF DE TRAZOS TÁCTICOS DINÁMICOS
+    // ========================================================
+    function toggleTrazosDinamicos() {
+      trazosDinamicosActivos = !trazosDinamicosActivos;
+      actualizarUITrazos();
+
+      if (!trazosDinamicosActivos) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.classList.add('hidden');
+        const miniBadge = document.getElementById('telestrationMiniBadge');
+        if (miniBadge) miniBadge.classList.add('hidden');
+      } else {
+        canvas.classList.remove('hidden');
+        initCanvas();
+        actualizarTelestrationFrame();
+        const miniBadge = document.getElementById('telestrationMiniBadge');
+        if (miniBadge) miniBadge.classList.remove('hidden');
+      }
+    }
+
+    function actualizarUITrazos() {
+      const floatBtn = document.getElementById('btnToggleTrazosFloating');
+      const floatLabel = document.getElementById('trazosFloatingLabel');
+      const floatDot = document.getElementById('trazosDot');
+      const barBtn = document.getElementById('btnToggleTrazosBar');
+      const barLabel = document.getElementById('trazosBarLabel');
+      const barIcon = document.getElementById('trazosBarIcon');
+
+      if (trazosDinamicosActivos) {
+        if (floatBtn) {
+          floatBtn.className = "bg-slate-950/85 hover:bg-slate-900 border border-emerald-400/80 px-2.5 py-1 rounded-full text-[11px] font-black text-emerald-300 flex items-center space-x-1.5 shadow-xl cursor-pointer backdrop-blur-md transition active:scale-95";
+        }
+        if (floatLabel) floatLabel.innerText = "🎯 Trazos: ACTIVADOS";
+        if (floatDot) floatDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+
+        if (barBtn) {
+          barBtn.className = "px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/60 rounded-lg font-black flex items-center space-x-1.5 cursor-pointer transition shadow-md";
+        }
+        if (barLabel) barLabel.innerText = "Trazos Tácticos Dinámicos: ACTIVADOS";
+        if (barIcon) barIcon.innerText = "🎯";
+      } else {
+        if (floatBtn) {
+          floatBtn.className = "bg-slate-900/85 hover:bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full text-[11px] font-black text-slate-400 flex items-center space-x-1.5 shadow-xl cursor-pointer backdrop-blur-md transition active:scale-95";
+        }
+        if (floatLabel) floatLabel.innerText = "👁️ Trazos: DESACTIVADOS";
+        if (floatDot) floatDot.className = "w-2 h-2 rounded-full bg-slate-500";
+
+        if (barBtn) {
+          barBtn.className = "px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition shadow-md";
+        }
+        if (barLabel) barLabel.innerText = "Trazos Tácticos Dinámicos: DESACTIVADOS";
+        if (barIcon) barIcon.innerText = "👁️";
+      }
+    }
+
+    // ========================================================
+    // MOTOR DE INTERPOLACIÓN DINÁMICA SEGUNDO A SEGUNDO (LERP)
+    // ========================================================
+    function getInterpolatedTele(clipKey, curTime) {
+      const clip = clipsData[clipKey];
+      if (!clip) return null;
+
+      const kfs = clip.trackingKeyframes || (clip.eventos ? clip.eventos.map(e => ({ sec: e.sec, ...e.tele })) : []);
+      if (!kfs || kfs.length === 0) return null;
+
+      // Si el video está antes del primer cuadro clave
+      if (curTime <= kfs[0].sec) return kfs[0];
+      // Si el video sobrepasa el último cuadro clave
+      if (curTime >= kfs[kfs.length - 1].sec) return kfs[kfs.length - 1];
+
+      // Encontrar los dos cuadros adyacentes
+      let idx = 0;
+      for (let i = 0; i < kfs.length - 1; i++) {
+        if (curTime >= kfs[i].sec && curTime <= kfs[i + 1].sec) {
+          idx = i;
+          break;
+        }
+      }
+
+      const k1 = kfs[idx];
+      const k2 = kfs[idx + 1];
+      const duration = k2.sec - k1.sec;
+      if (duration <= 0.001) return k1;
+
+      const rawT = Math.max(0, Math.min(1, (curTime - k1.sec) / duration));
+      // Suavizado Hermite (smoothstep) para movimiento continuo y fluido
+      const t = rawT * rawT * (3 - 2 * rawT);
+
+      // 1. Interpolar Grupos Conectados
+      let interpolatedGroups = [];
+      if (k1.connectedGroups && k2.connectedGroups) {
+        const minLen = Math.min(k1.connectedGroups.length, k2.connectedGroups.length);
+        for (let gIdx = 0; gIdx < minLen; gIdx++) {
+          const g1 = k1.connectedGroups[gIdx];
+          const g2 = k2.connectedGroups[gIdx];
+          
+          let interPlayers = [];
+          const pCount = Math.min(g1.jugadores.length, g2.jugadores.length);
+          for (let pIdx = 0; pIdx < pCount; pIdx++) {
+            const p1 = g1.jugadores[pIdx];
+            const p2 = g2.jugadores[pIdx];
+            interPlayers.push({
+              x: p1.x + (p2.x - p1.x) * t,
+              y: p1.y + (p2.y - p1.y) * t,
+              color: p2.color || p1.color,
+              label: p2.label || p1.label,
+              sub: p2.sub || p1.sub,
+              radius: p1.radius ? (p1.radius + (p2.radius - p1.radius) * t) : 24
+            });
+          }
+
+          let brechaLabel = g2.brechaLabel || g1.brechaLabel;
+          if (g1.brechaIndex !== undefined && interPlayers.length > g1.brechaIndex + 1) {
+            const bP1 = interPlayers[g1.brechaIndex];
+            const bP2 = interPlayers[g1.brechaIndex + 1];
+            // Distancia métrica dinámica calculada en tiempo real
+            const distEst = (Math.hypot(bP2.x - bP1.x, (bP2.y - bP1.y) * 1.4) * 0.42).toFixed(1);
+            brechaLabel = `⚠️ Desfase: ${distEst} m`;
+          }
+
+          interpolatedGroups.push({
+            tipo: g2.tipo || g1.tipo,
+            color: g2.color || g1.color,
+            dash: g2.dash || g1.dash,
+            label: g2.label || g1.label,
+            brechaIndex: g1.brechaIndex,
+            brechaLabel: brechaLabel,
+            width: g1.width,
+            jugadores: interPlayers
+          });
+        }
+      } else if (rawT < 0.5 && k1.connectedGroups) {
+        interpolatedGroups = k1.connectedGroups;
+      } else if (rawT >= 0.5 && k2.connectedGroups) {
+        interpolatedGroups = k2.connectedGroups;
+      }
+
+      // 2. Interpolar Spots / Círculos individuales
+      let interpolatedSpots = [];
+      if (k1.spots && k2.spots) {
+        const sCount = Math.min(k1.spots.length, k2.spots.length);
+        for (let sIdx = 0; sIdx < sCount; sIdx++) {
+          const s1 = k1.spots[sIdx];
+          const s2 = k2.spots[sIdx];
+          interpolatedSpots.push({
+            x: s1.x + (s2.x - s1.x) * t,
+            y: s1.y + (s2.y - s1.y) * t,
+            radius: (s1.radius || 24) + ((s2.radius || 24) - (s1.radius || 24)) * t,
+            color: s2.color || s1.color,
+            label: s2.label || s1.label,
+            sub: s2.sub || s1.sub
+          });
+        }
+      } else if (rawT < 0.5 && k1.spots) {
+        interpolatedSpots = k1.spots;
+      } else if (rawT >= 0.5 && k2.spots) {
+        interpolatedSpots = k2.spots;
+      }
+
+      // 3. Interpolar Líneas y Vectores
+      let interpolatedLines = [];
+      if (k1.lineas && k2.lineas) {
+        const lCount = Math.min(k1.lineas.length, k2.lineas.length);
+        for (let lIdx = 0; lIdx < lCount; lIdx++) {
+          const l1 = k1.lineas[lIdx];
+          const l2 = k2.lineas[lIdx];
+          interpolatedLines.push({
+            x1: l1.x1 + (l2.x1 - l1.x1) * t,
+            y1: l1.y1 + (l2.y1 - l1.y1) * t,
+            x2: l1.x2 + (l2.x2 - l1.x2) * t,
+            y2: l1.y2 + (l2.y2 - l1.y2) * t,
+            color: l2.color || l1.color,
+            dash: l2.dash || l1.dash,
+            arrow: l2.arrow !== undefined ? l2.arrow : l1.arrow,
+            label: l2.label || l1.label,
+            width: l1.width
+          });
+        }
+      } else if (rawT < 0.5 && k1.lineas) {
+        interpolatedLines = k1.lineas;
+      } else if (rawT >= 0.5 && k2.lineas) {
+        interpolatedLines = k2.lineas;
+      }
+
+      return {
+        connectedGroups: interpolatedGroups,
+        spots: interpolatedSpots,
+        lineas: interpolatedLines,
+        zonas: rawT < 0.5 ? k1.zonas : k2.zonas
+      };
+    }
+
+    function renderTelestration(tele) {
+      const vr = getVideoRenderRect();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!tele) return;
+
+      // Conversión de coordenadas porcentuales normalizadas a píxeles exactos en el video
+      const toPx = (nx, ny) => ({
+        x: vr.x + (nx / 100) * vr.w,
+        y: vr.y + (ny / 100) * vr.h
+      });
+
+      // 1. GRUPOS DE JUGADORES CONECTADOS (LÍNEAS TÁCTICAS DINÁMICAS ENTRE DEFENSAS Y MEDIOS)
+      if (tele.connectedGroups && tele.connectedGroups.length > 0) {
+        tele.connectedGroups.forEach(g => {
+          if (!g.jugadores || g.jugadores.length < 2) return;
+
+          // Dibujar líneas entre jugadores consecutivos (con perspectiva real del césped)
+          for (let i = 0; i < g.jugadores.length - 1; i++) {
+            const p1 = g.jugadores[i];
+            const p2 = g.jugadores[i + 1];
+            const pt1 = toPx(p1.x, p1.y);
+            const pt2 = toPx(p2.x, p2.y);
+
+            const isBreach = (g.brechaIndex === i);
+            const lineColor = isBreach ? '#ef4444' : (g.color || '#10b981');
+            const isDashed = isBreach || g.dash;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(pt1.x, pt1.y);
+            ctx.lineTo(pt2.x, pt2.y);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = isBreach ? 4 : (g.width || 3.5);
+            if (isDashed) ctx.setLineDash([7, 5]);
+            else ctx.setLineDash([]);
+            ctx.shadowColor = lineColor;
+            ctx.shadowBlur = isBreach ? 12 : 6;
+            ctx.stroke();
+
+            // Etiqueta en medio de este segmento si hay brecha/desfase
+            if (isBreach && g.brechaLabel) {
+              const midX = (pt1.x + pt2.x) / 2;
+              const midY = (pt1.y + pt2.y) / 2;
+              ctx.font = 'bold 10px sans-serif';
+              const tw = ctx.measureText(g.brechaLabel).width + 16;
+              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 1.5;
+              ctx.setLineDash([]);
+              drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
+              ctx.fill();
+              ctx.stroke();
+
+              ctx.fillStyle = '#fca5a5';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(g.brechaLabel, midX, midY);
+            }
+            ctx.restore();
+          }
+
+          // Etiqueta general del grupo si no es brecha
+          if (g.label && g.brechaIndex === undefined) {
+            const first = toPx(g.jugadores[0].x, g.jugadores[0].y);
+            const last = toPx(g.jugadores[g.jugadores.length - 1].x, g.jugadores[g.jugadores.length - 1].y);
+            const midX = (first.x + last.x) / 2;
+            const midY = (first.y + last.y) / 2 - 16;
+
+            ctx.save();
+            ctx.font = 'bold 11px sans-serif';
+            const tw = ctx.measureText(g.label).width + 16;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = g.color || '#10b981';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(g.label, midX, midY);
+            ctx.restore();
+          }
+
+          // Círculo brillante con perspectiva 3D a los pies de cada jugador
+          g.jugadores.forEach(j => {
+            const pt = toPx(j.x, j.y);
+            const rx = (j.radius || 24) * (vr.w / 650);
+            const ry = rx * 0.45;
+            const jColor = j.color || g.color || '#10b981';
+
+            ctx.save();
+            // Anillo exterior punteado
+            ctx.beginPath();
+            ctx.ellipse(pt.x, pt.y, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = jColor;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+
+            // Anillo base brillante
+            ctx.beginPath();
+            ctx.ellipse(pt.x, pt.y, rx, ry, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `${jColor}35`;
+            ctx.fill();
+            ctx.strokeStyle = jColor;
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            ctx.shadowColor = jColor;
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+
+            // Etiqueta del futbolista
+            if (j.label) {
+              ctx.font = 'bold 10px sans-serif';
+              const labelW = Math.max(ctx.measureText(j.label).width, j.sub ? ctx.measureText(j.sub).width : 0) + 14;
+              const boxH = j.sub ? 28 : 18;
+              const boxY = pt.y - ry - 14 - boxH;
+
+              ctx.beginPath();
+              ctx.moveTo(pt.x, pt.y - ry);
+              ctx.lineTo(pt.x, pt.y - ry - 14);
+              ctx.strokeStyle = jColor;
+              ctx.lineWidth = 1.5;
+              ctx.shadowBlur = 0;
+              ctx.stroke();
+
+              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+              ctx.strokeStyle = jColor;
+              ctx.lineWidth = 1.5;
+              drawRoundRect(ctx, pt.x - labelW / 2, boxY, labelW, boxH, 5);
+              ctx.fill();
+              ctx.stroke();
+
+              ctx.fillStyle = '#ffffff';
+              ctx.textAlign = 'center';
+              if (j.sub) {
+                ctx.textBaseline = 'top';
+                ctx.fillText(j.label, pt.x, boxY + 3);
+                ctx.font = 'bold 8.5px sans-serif';
+                ctx.fillStyle = jColor;
+                ctx.fillText(j.sub, pt.x, boxY + 15);
+              } else {
+                ctx.textBaseline = 'middle';
+                ctx.fillText(j.label, pt.x, boxY + boxH / 2);
+              }
+            }
+            ctx.restore();
+          });
+        });
+      }
+
+      // 2. SPOTS / CÍRCULOS INDIVIDUALES
+      if (tele.spots && tele.spots.length > 0) {
+        tele.spots.forEach(s => {
+          const pt = toPx(s.x, s.y);
+          const rx = (s.radius || 26) * (vr.w / 650);
+          const ry = rx * 0.45;
+          const sColor = s.color || '#f59e0b';
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.ellipse(pt.x, pt.y, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = sColor;
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.ellipse(pt.x, pt.y, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fillStyle = sColor ? `${sColor}35` : 'rgba(245, 158, 11, 0.25)';
+          ctx.fill();
+          ctx.strokeStyle = sColor;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([]);
+          ctx.shadowColor = sColor;
+          ctx.shadowBlur = 12;
+          ctx.stroke();
+
+          if (s.label) {
+            ctx.font = 'bold 11px sans-serif';
+            const labelW = Math.max(ctx.measureText(s.label).width, s.sub ? ctx.measureText(s.sub).width : 0) + 16;
+            const boxH = s.sub ? 32 : 20;
+            const boxY = pt.y - ry - 18 - boxH;
+
+            ctx.beginPath();
+            ctx.moveTo(pt.x, pt.y - ry);
+            ctx.lineTo(pt.x, pt.y - ry - 18);
+            ctx.strokeStyle = sColor;
+            ctx.lineWidth = 1.5;
+            ctx.shadowBlur = 0;
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+            ctx.strokeStyle = sColor;
+            ctx.lineWidth = 1.5;
+            drawRoundRect(ctx, pt.x - labelW / 2, boxY, labelW, boxH, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            if (s.sub) {
+              ctx.textBaseline = 'top';
+              ctx.fillText(s.label, pt.x, boxY + 4);
+              ctx.font = 'bold 9px sans-serif';
+              ctx.fillStyle = sColor;
+              ctx.fillText(s.sub, pt.x, boxY + 18);
+            } else {
+              ctx.textBaseline = 'middle';
+              ctx.fillText(s.label, pt.x, boxY + boxH / 2);
+            }
+          }
+          ctx.restore();
+        });
+      }
+
+      // 3. LÍNEAS Y TRAYECTORIAS
+      if (tele.lineas && tele.lineas.length > 0) {
+        tele.lineas.forEach(l => {
+          const pt1 = toPx(l.x1, l.y1);
+          const pt2 = toPx(l.x2, l.y2);
+          const lColor = l.color || '#f59e0b';
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(pt1.x, pt1.y);
+          ctx.lineTo(pt2.x, pt2.y);
+          ctx.strokeStyle = lColor;
+          ctx.lineWidth = l.width || 3.5;
+          if (l.dash) ctx.setLineDash(l.dash);
+          else ctx.setLineDash([]);
+          ctx.stroke();
+
+          if (l.arrow) {
+            const headlen = 13;
+            const angle = Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x);
+            ctx.fillStyle = lColor;
+            ctx.beginPath();
+            ctx.moveTo(pt2.x, pt2.y);
+            ctx.lineTo(pt2.x - headlen * Math.cos(angle - Math.PI / 6), pt2.y - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(pt2.x - headlen * Math.cos(angle + Math.PI / 6), pt2.y - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          if (l.label) {
+            const midX = (pt1.x + pt2.x) / 2;
+            const midY = (pt1.y + pt2.y) / 2;
+            ctx.save();
+            ctx.font = 'bold 10px sans-serif';
+            const textWidth = ctx.measureText(l.label).width + 16;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = lColor;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            drawRoundRect(ctx, midX - textWidth / 2, midY - 11, textWidth, 22, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(l.label, midX, midY);
+            ctx.restore();
+          }
+          ctx.restore();
+        });
+      }
+    }
+
+    function actualizarTelestrationFrame() {
+      if (!trazosDinamicosActivos || modoDibujo) return;
+      canvas.classList.remove('hidden');
+      const curTime = matchVideo.currentTime || 0;
+      const teleFrame = getInterpolatedTele(currentClipKey, curTime);
+      if (teleFrame) {
+        renderTelestration(teleFrame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function startDynamicTrackingLoop() {
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      function loop() {
+        if (trazosDinamicosActivos && !modoDibujo) {
+          actualizarTelestrationFrame();
+        }
+        animFrameId = requestAnimationFrame(loop);
+      }
+      animFrameId = requestAnimationFrame(loop);
+    }
+
+    // Dibujo de rectángulo con bordes redondeados
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        return;
+      }
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+    }
+
+    // Ejecutar evento específico (Hito del desglose)
+    function ejecutarTelestrationEvento(clipKey, eventIdx) {
+      const clip = clipsData[clipKey];
+      if (!clip || !clip.eventos || !clip.eventos[eventIdx]) return;
+      const ev = clip.eventos[eventIdx];
+      currentEventIdx = eventIdx;
+
+      // Saltar el video al segundo exacto
+      matchVideo.pause();
+      matchVideo.currentTime = ev.sec;
+
+      if (trazosDinamicosActivos) {
+        canvas.classList.remove('hidden');
+        initCanvas();
+        actualizarTelestrationFrame();
+      }
+
+      // Mostrar tarjeta HUD explicativa debajo del video
+      const miniBadge = document.getElementById('telestrationMiniBadge');
+      if (miniBadge && trazosDinamicosActivos) miniBadge.classList.remove('hidden');
+
+      const card = document.getElementById('telestrationCard');
+      if (card) {
+        document.getElementById('teleCardTitulo').innerText = ev.tele?.tituloIA || ev.titulo;
+        document.getElementById('teleCardDesc').innerText = ev.tele?.descIA || ev.desc;
+        document.getElementById('teleCardMetrica').innerText = ev.tele?.metrica || '📐 Análisis Táctico Oficial';
+        document.getElementById('teleCardAlerta').innerText = ev.tele?.alerta || '⚡ Recomendación DT';
+        card.classList.remove('hidden');
+      }
+
+      // En móviles, hacer scroll suave al reproductor de video
+      if (window.innerWidth < 1024) {
+        const vWrap = document.querySelector('.video-wrapper');
+        if (vWrap) {
+          vWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
+    function reanudarJugada() {
+      const card = document.getElementById('telestrationCard');
+      if (card) card.classList.add('hidden');
+      try {
+        const p = matchVideo.play();
+        if (p !== undefined) {
+          p.catch(err => console.warn("Video play error:", err));
+        }
+      } catch (e) {
+        console.warn("Play error:", e);
+      }
+    }
+
+    function cerrarTelestration() {
+      const card = document.getElementById('telestrationCard');
+      if (card) card.classList.add('hidden');
+    }
+
+    function activarModoLapizManual() {
+      const card = document.getElementById('telestrationCard');
+      if (card) card.classList.add('hidden');
+      if (!modoDibujo) {
+        toggleModoDibujo();
+      }
+    }
+
+    function triggerTelestrationActual() {
+      const curSec = Math.floor(matchVideo.currentTime);
+      const clip = clipsData[currentClipKey];
+      if (!clip || !clip.eventos) return;
+      
+      let closestIdx = 0;
+      let minDiff = 999;
+      clip.eventos.forEach((ev, idx) => {
+        const diff = Math.abs(ev.sec - curSec);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+
+      ejecutarTelestrationEvento(currentClipKey, closestIdx);
+    }
+
+    // PIZARRA MANUAL LIBRE
     function toggleModoDibujo() {
       modoDibujo = !modoDibujo;
       const tools = document.getElementById('herramientasDibujo');
@@ -1620,7 +2926,7 @@
       const text = document.getElementById('dibujoText');
 
       if (modoDibujo) {
-        matchVideo.pause(); // Pausar video automáticamente para dibujar sobre el frame
+        matchVideo.pause();
         initCanvas();
         canvas.classList.remove('hidden');
         canvas.style.pointerEvents = 'auto';
@@ -1629,16 +2935,19 @@
         btn.classList.remove('bg-amber-500/20', 'text-amber-400');
         text.innerText = 'Desactivar Pizarra';
       } else {
-        canvas.classList.add('hidden');
         canvas.style.pointerEvents = 'none';
         tools.classList.add('hidden');
         btn.classList.remove('bg-amber-400', 'text-slate-950');
         btn.classList.add('bg-amber-500/20', 'text-amber-400');
         text.innerText = 'Activar Pizarra Táctica';
+        if (trazosDinamicosActivos) {
+          actualizarTelestrationFrame();
+        } else {
+          canvas.classList.add('hidden');
+        }
       }
     }
 
-    // Obtener coordenadas normalizadas (Mouse o Touch en móvil)
     function getCanvasCoords(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
@@ -1670,13 +2979,11 @@
       dibujando = false;
     }
 
-    // Eventos Mouse
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
 
-    // Eventos Touch (Celulares y Tablets iOS / Android)
     canvas.addEventListener('touchstart', startDrawing, { passive: false });
     canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', stopDrawing);
@@ -1689,463 +2996,36 @@
 
     function limpiarCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // ========================================================
-    // TELESTRATION TÁCTICO AUTOMÁTICO (IA / COMPUTER VISION)
-    // ========================================================
-    let modoTelestrationActivo = false;
-    let currentEventIdx = 0;
-
-    function drawRoundRect(ctx, x, y, w, h, r) {
-      if (ctx.roundRect) {
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, r);
-        return;
-      }
-      if (w < 2 * r) r = w / 2;
-      if (h < 2 * r) r = h / 2;
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + w, y, x + w, y + h, r);
-      ctx.arcTo(x + w, y + h, x, y + h, r);
-      ctx.arcTo(x, y + h, x, y, r);
-      ctx.arcTo(x, y, x + r, y, r);
-      ctx.closePath();
-    }
-
-    function ejecutarTelestrationEvento(clipKey, eventIdx) {
-      const clip = clipsData[clipKey];
-      if (!clip || !clip.eventos || !clip.eventos[eventIdx]) return;
-      const ev = clip.eventos[eventIdx];
-      currentEventIdx = eventIdx;
-
-      // 1. Saltar y pausar el video en el segundo exacto
-      matchVideo.pause();
-      matchVideo.currentTime = ev.sec;
-
-      // 2. Preparar el canvas (pointer-events-none para que nunca bloquee los clics en el video)
-      canvas.classList.remove('hidden');
-      canvas.style.pointerEvents = 'none';
-      initCanvas();
-      modoTelestrationActivo = true;
-
-      // 3. Renderizar telestration táctico estilo televisión
-      renderTelestration(ev.tele, ev.titulo, ev.desc);
-
-      // Redibujar en 'seeked' para garantizar sincronía exacta con el frame decodificado
-      const onSeeked = () => {
-        if (modoTelestrationActivo && currentClipKey === clipKey && currentEventIdx === eventIdx) {
-          initCanvas();
-          renderTelestration(ev.tele, ev.titulo, ev.desc);
-        }
-      };
-      matchVideo.addEventListener('seeked', onSeeked, { once: true });
-
-      // 4. Mostrar tarjeta HUD (debajo del video) y mini badge en la esquina
-      const miniBadge = document.getElementById('telestrationMiniBadge');
-      if (miniBadge) miniBadge.classList.remove('hidden');
-
-      const card = document.getElementById('telestrationCard');
-      if (card) {
-        document.getElementById('teleCardTitulo').innerText = ev.tele?.tituloIA || ev.titulo;
-        document.getElementById('teleCardDesc').innerText = ev.tele?.descIA || ev.desc;
-        document.getElementById('teleCardMetrica').innerText = ev.tele?.metrica || '📐 Análisis Táctico Oficial';
-        document.getElementById('teleCardAlerta').innerText = ev.tele?.alerta || '⚡ Recomendación DT';
-        card.classList.remove('hidden');
-      }
-
-      // 5. En móviles, hacer scroll suave al reproductor de video
-      if (window.innerWidth < 1024) {
-        const vWrap = document.querySelector('.video-wrapper');
-        if (vWrap) {
-          vWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      if (trazosDinamicosActivos && !modoDibujo) {
+        actualizarTelestrationFrame();
       }
     }
 
-    function renderTelestration(tele, titulo, desc) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!tele) return;
-
-      const w = canvas.width;
-      const h = canvas.height;
-
-      // 1. GRUPOS DE JUGADORES CONECTADOS (LÍNEAS TÁCTICAS QUE UNEN JUGADOR A JUGADOR EN PERSPECTIVA)
-      if (tele.connectedGroups && tele.connectedGroups.length > 0) {
-        tele.connectedGroups.forEach(g => {
-          if (!g.jugadores || g.jugadores.length < 2) return;
-
-          // Dibujar líneas entre jugadores consecutivos (sigue la perspectiva real del césped)
-          for (let i = 0; i < g.jugadores.length - 1; i++) {
-            const p1 = g.jugadores[i];
-            const p2 = g.jugadores[i + 1];
-            const x1 = (p1.x / 100) * w;
-            const y1 = (p1.y / 100) * h;
-            const x2 = (p2.x / 100) * w;
-            const y2 = (p2.y / 100) * h;
-
-            const isBreach = (g.brechaIndex === i);
-            const lineColor = isBreach ? '#ef4444' : (g.color || '#10b981');
-            const isDashed = isBreach || g.dash;
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.strokeStyle = lineColor;
-            ctx.lineWidth = isBreach ? 4 : (g.width || 3.5);
-            if (isDashed) ctx.setLineDash([7, 5]);
-            else ctx.setLineDash([]);
-            ctx.shadowColor = lineColor;
-            ctx.shadowBlur = isBreach ? 12 : 6;
-            ctx.stroke();
-
-            // Etiqueta en medio de este segmento específico si hay brecha
-            if (isBreach && g.brechaLabel) {
-              const midX = (x1 + x2) / 2;
-              const midY = (y1 + y2) / 2;
-              ctx.font = 'bold 10px sans-serif';
-              const tw = ctx.measureText(g.brechaLabel).width + 16;
-              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
-              ctx.strokeStyle = '#ef4444';
-              ctx.lineWidth = 1.5;
-              ctx.setLineDash([]);
-              drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
-              ctx.fill();
-              ctx.stroke();
-
-              ctx.fillStyle = '#fca5a5';
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(g.brechaLabel, midX, midY);
-            }
-            ctx.restore();
-          }
-
-          // Etiqueta general del grupo si no es brecha
-          if (g.label && g.brechaIndex === undefined) {
-            const first = g.jugadores[0];
-            const last = g.jugadores[g.jugadores.length - 1];
-            const midX = ((first.x + last.x) / 2 / 100) * w;
-            const midY = ((first.y + last.y) / 2 / 100) * h - 16;
-
-            ctx.save();
-            ctx.font = 'bold 11px sans-serif';
-            const tw = ctx.measureText(g.label).width + 16;
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-            ctx.strokeStyle = g.color || '#10b981';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([]);
-            drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(g.label, midX, midY);
-            ctx.restore();
-          }
-
-          // Dibujar el círculo brillante bajo cada jugador del grupo
-          g.jugadores.forEach(j => {
-            const cx = (j.x / 100) * w;
-            const cy = (j.y / 100) * h;
-            const rx = (j.radius || 24) * (w / 650);
-            const ry = rx * 0.45;
-            const jColor = j.color || g.color || '#10b981';
-
-            ctx.save();
-            // Anillo exterior punteado
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
-            ctx.strokeStyle = jColor;
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 4]);
-            ctx.stroke();
-
-            // Anillo base brillante con perspectiva 3D
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-            ctx.fillStyle = `${jColor}35`;
-            ctx.fill();
-            ctx.strokeStyle = jColor;
-            ctx.lineWidth = 3;
-            ctx.setLineDash([]);
-            ctx.shadowColor = jColor;
-            ctx.shadowBlur = 10;
-            ctx.stroke();
-
-            // Etiqueta del jugador
-            if (j.label) {
-              ctx.font = 'bold 10px sans-serif';
-              const labelW = Math.max(ctx.measureText(j.label).width, j.sub ? ctx.measureText(j.sub).width : 0) + 14;
-              const boxH = j.sub ? 28 : 18;
-              const boxY = cy - ry - 14 - boxH;
-
-              // Línea de conexión a etiqueta
-              ctx.beginPath();
-              ctx.moveTo(cx, cy - ry);
-              ctx.lineTo(cx, cy - ry - 14);
-              ctx.strokeStyle = jColor;
-              ctx.lineWidth = 1.5;
-              ctx.shadowBlur = 0;
-              ctx.stroke();
-
-              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
-              ctx.strokeStyle = jColor;
-              ctx.lineWidth = 1.5;
-              drawRoundRect(ctx, cx - labelW / 2, boxY, labelW, boxH, 5);
-              ctx.fill();
-              ctx.stroke();
-
-              ctx.fillStyle = '#ffffff';
-              ctx.textAlign = 'center';
-              if (j.sub) {
-                ctx.textBaseline = 'top';
-                ctx.fillText(j.label, cx, boxY + 3);
-                ctx.font = 'bold 8.5px sans-serif';
-                ctx.fillStyle = jColor;
-                ctx.fillText(j.sub, cx, boxY + 15);
-              } else {
-                ctx.textBaseline = 'middle';
-                ctx.fillText(j.label, cx, boxY + boxH / 2);
-              }
-            }
-            ctx.restore();
-          });
-        });
-      }
-
-      // 2. ZONAS TÁCTICAS (ESPACIOS CONCEDIDOS O DE REMATE)
-      if (tele.zonas && tele.zonas.length > 0) {
-        tele.zonas.forEach(z => {
-          ctx.save();
-          ctx.beginPath();
-          z.points.forEach((pt, i) => {
-            const px = (pt.x / 100) * w;
-            const py = (pt.y / 100) * h;
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          });
-          ctx.closePath();
-          ctx.fillStyle = z.color || 'rgba(239, 68, 68, 0.28)';
-          ctx.fill();
-          ctx.strokeStyle = z.stroke || '#ef4444';
-          ctx.lineWidth = 2.5;
-          ctx.setLineDash(z.dash || [6, 4]);
-          ctx.stroke();
-
-          if (z.label) {
-            let avgX = 0, avgY = 0;
-            z.points.forEach(pt => { avgX += pt.x; avgY += pt.y; });
-            avgX = (avgX / z.points.length / 100) * w;
-            avgY = (avgY / z.points.length / 100) * h;
-
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-            ctx.strokeStyle = z.stroke || '#ef4444';
-            ctx.setLineDash([]);
-            ctx.lineWidth = 1.5;
-            const textW = ctx.measureText(z.label).width + 16;
-            drawRoundRect(ctx, avgX - textW/2, avgY - 11, textW, 22, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(z.label, avgX, avgY);
-          }
-          ctx.restore();
-        });
-      }
-
-      // 3. LÍNEAS Y VECTORES TÁCTICOS INDIVIDUALES
-      if (tele.lineas && tele.lineas.length > 0) {
-        tele.lineas.forEach(l => {
-          ctx.save();
-          const x1 = (l.x1 / 100) * w;
-          const y1 = (l.y1 / 100) * h;
-          const x2 = (l.x2 / 100) * w;
-          const y2 = (l.y2 / 100) * h;
-
-          ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.strokeStyle = l.color || '#f59e0b';
-          ctx.lineWidth = l.width || 3.5;
-          if (l.dash) ctx.setLineDash(l.dash);
-          else ctx.setLineDash([]);
-          ctx.stroke();
-
-          if (l.arrow) {
-            const headlen = 13;
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            ctx.fillStyle = l.color || '#f59e0b';
-            ctx.beginPath();
-            ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-          }
-
-          if (l.label) {
-            const midX = (x1 + x2) / 2;
-            const midY = (y1 + y2) / 2;
-            ctx.save();
-            ctx.font = 'bold 10px sans-serif';
-            const textWidth = ctx.measureText(l.label).width + 16;
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-            ctx.strokeStyle = l.color || '#f59e0b';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([]);
-            drawRoundRect(ctx, midX - textWidth / 2, midY - 11, textWidth, 22, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(l.label, midX, midY);
-            ctx.restore();
-          }
-          ctx.restore();
-        });
-      }
-
-      // 4. ANILLOS / SPOTLIGHTS INDIVIDUALES SOBRE JUGADORES
-      if (tele.spots && tele.spots.length > 0) {
-        tele.spots.forEach(s => {
-          ctx.save();
-          const cx = (s.x / 100) * w;
-          const cy = (s.y / 100) * h;
-          const rx = (s.radius || 26) * (w / 650);
-          const ry = rx * 0.45;
-
-          // Anillo exterior punteado
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = s.color || '#f59e0b';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([4, 4]);
-          ctx.stroke();
-
-          // Anillo base con brillo de neón
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-          ctx.fillStyle = s.color ? `${s.color}35` : 'rgba(245, 158, 11, 0.25)';
-          ctx.fill();
-          ctx.strokeStyle = s.color || '#f59e0b';
-          ctx.lineWidth = 3;
-          ctx.setLineDash([]);
-          ctx.shadowColor = s.color || '#f59e0b';
-          ctx.shadowBlur = 12;
-          ctx.stroke();
-
-          // Línea vertical hacia la etiqueta
-          ctx.beginPath();
-          ctx.moveTo(cx, cy - ry);
-          ctx.lineTo(cx, cy - ry - 20);
-          ctx.strokeStyle = s.color || '#f59e0b';
-          ctx.lineWidth = 1.5;
-          ctx.shadowBlur = 0;
-          ctx.stroke();
-
-          // Etiqueta del futbolista
-          if (s.label) {
-            ctx.font = 'bold 11px sans-serif';
-            const labelW = Math.max(ctx.measureText(s.label).width, s.sub ? ctx.measureText(s.sub).width : 0) + 16;
-            const boxH = s.sub ? 32 : 20;
-            const boxY = cy - ry - 20 - boxH;
-
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
-            ctx.strokeStyle = s.color || '#f59e0b';
-            ctx.lineWidth = 1.5;
-            drawRoundRect(ctx, cx - labelW / 2, boxY, labelW, boxH, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            if (s.sub) {
-              ctx.textBaseline = 'top';
-              ctx.fillText(s.label, cx, boxY + 4);
-              ctx.font = 'bold 9px sans-serif';
-              ctx.fillStyle = s.color || '#f59e0b';
-              ctx.fillText(s.sub, cx, boxY + 18);
-            } else {
-              ctx.textBaseline = 'middle';
-              ctx.fillText(s.label, cx, boxY + boxH / 2);
-            }
-          }
-          ctx.restore();
-        });
-      }
-    }
-
-    function reanudarJugada() {
-      limpiarTelestration(false);
-      try {
-        const p = matchVideo.play();
-        if (p !== undefined) {
-          p.catch(err => console.warn("Video play promise caught:", err));
-        }
-      } catch (e) {
-        console.warn("Play error:", e);
-      }
-    }
-
-    function limpiarTelestration(mantenerPausado) {
-      modoTelestrationActivo = false;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      canvas.classList.add('hidden');
-      canvas.style.pointerEvents = 'none';
-      const miniBadge = document.getElementById('telestrationMiniBadge');
-      if (miniBadge) miniBadge.classList.add('hidden');
-      const card = document.getElementById('telestrationCard');
-      if (card) card.classList.add('hidden');
-    }
-
-    function cerrarTelestration() {
-      limpiarTelestration(true);
-    }
-
-    function activarModoLapizManual() {
-      const card = document.getElementById('telestrationCard');
-      if (card) card.classList.add('hidden');
-      if (!modoDibujo) {
-        toggleModoDibujo();
-      }
-    }
-
-    function triggerTelestrationActual() {
-      const curSec = Math.floor(matchVideo.currentTime);
-      const clip = clipsData[currentClipKey];
-      if (!clip || !clip.eventos) return;
-      
-      let closestIdx = 0;
-      let minDiff = 999;
-      clip.eventos.forEach((ev, idx) => {
-        const diff = Math.abs(ev.sec - curSec);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = idx;
-        }
-      });
-
-      ejecutarTelestrationEvento(currentClipKey, closestIdx);
-    }
-
+    // Video Listeners
     matchVideo.addEventListener('play', () => {
-      limpiarTelestration(false);
+      if (trazosDinamicosActivos && !modoDibujo) {
+        canvas.classList.remove('hidden');
+      }
+    });
+
+    matchVideo.addEventListener('seeked', () => {
+      if (trazosDinamicosActivos && !modoDibujo) {
+        actualizarTelestrationFrame();
+      }
+    });
+
+    matchVideo.addEventListener('loadedmetadata', () => {
+      initCanvas();
+      if (trazosDinamicosActivos) {
+        actualizarTelestrationFrame();
+      }
     });
 
     matchVideo.addEventListener('click', () => {
-      if (modoTelestrationActivo && matchVideo.paused) {
-        reanudarJugada();
+      if (matchVideo.paused) {
+        matchVideo.play().catch(e => console.warn(e));
+      } else {
+        matchVideo.pause();
       }
     });
 
