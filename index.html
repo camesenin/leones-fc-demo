@@ -28,6 +28,7 @@
     }
     #tacticalCanvas {
       touch-action: none;
+      pointer-events: none;
     }
     .no-scrollbar::-webkit-scrollbar {
       display: none;
@@ -243,8 +244,8 @@
                 Tu navegador no soporta video MP4 nativo.
               </video>
 
-              <!-- Canvas transparente para dibujo táctico -->
-              <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-auto"></canvas>
+              <!-- Canvas transparente para dibujo táctico (pointer-events-none en visualización) -->
+              <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-none"></canvas>
 
               <!-- Mini badge sutil en esquina del video (NO obstruye el campo) -->
               <div id="telestrationMiniBadge" class="hidden absolute top-2.5 left-2.5 bg-slate-950/85 backdrop-blur-md border border-amber-400/80 px-2.5 py-1 rounded-full text-[10px] font-black text-amber-300 flex items-center space-x-1.5 shadow-lg z-30 pointer-events-none">
@@ -694,11 +695,17 @@
               descIA: "Unión Magdalena explota la amplitud. El extremo samario recibe con 8.4 m de margen.",
               metrica: "📐 Amplitud concedida: 8.4 m",
               alerta: "⚠️ Retraso en achique",
-              spots: [
-                { x: 74, y: 55, radius: 24, color: '#f59e0b', label: "Extremo Unión", sub: "Avance libre" }
-              ],
-              lineas: [
-                { x1: 74, y1: 55, x2: 66, y2: 62, color: '#f59e0b', dash: [6, 4], arrow: true, label: "Carril de avance" }
+              connectedGroups: [
+                {
+                  tipo: 'ataque_banda',
+                  color: '#f59e0b',
+                  dash: [6, 4],
+                  label: "Tándem Ofensivo Rival",
+                  jugadores: [
+                    { x: 70.0, y: 52.0, color: '#38bdf8', label: "Lateral Samario", sub: "Unión" },
+                    { x: 80.0, y: 56.0, color: '#f59e0b', label: "Extremo", sub: "Avance libre" }
+                  ]
+                }
               ]
             }
           },
@@ -713,16 +720,24 @@
               descIA: "Falta de sincronización en la zaga. Desfase de 14.2 m entre central y lateral opuesto que habilita a Molina.",
               metrica: "📐 Brecha en zaga: 14.2 m",
               alerta: "🚨 Fuera de juego roto (2.1 m)",
+              connectedGroups: [
+                {
+                  tipo: 'linea_zaga',
+                  color: '#10b981',
+                  brechaIndex: 1,
+                  brechaLabel: "⚠️ Desfase: 14.2 m",
+                  jugadores: [
+                    { x: 34.0, y: 56.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                    { x: 50.0, y: 57.5, color: '#10b981', label: "Central", sub: "Leones" },
+                    { x: 74.0, y: 62.0, color: '#ef4444', label: "Lateral Izq", sub: "Desfasado 2.1 m" }
+                  ]
+                }
+              ],
               spots: [
-                { x: 38, y: 54, radius: 24, color: '#ef4444', label: "Freddy Molina (#9 Rival)", sub: "Ataque segundo palo" },
-                { x: 55, y: 58, radius: 22, color: '#10b981', label: "Central Leones", sub: "Línea de corte" }
+                { x: 38.0, y: 52.0, radius: 26, color: '#ef4444', label: "Freddy Molina (#9)", sub: "Ataque al segundo palo" }
               ],
               lineas: [
-                { x1: 38, y1: 54, x2: 55, y2: 58, color: '#ef4444', dash: [6, 4], arrow: false, label: "Desfase: 14.2 m" },
-                { x1: 72, y1: 52, x2: 40, y2: 53, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de centro" }
-              ],
-              zonas: [
-                { points: [{x:32, y:50}, {x:46, y:50}, {x:44, y:62}, {x:30, y:60}], color: 'rgba(239, 68, 68, 0.25)', stroke: '#ef4444', label: "Zona Concedida" }
+                { x1: 74.0, y1: 55.0, x2: 40.0, y2: 53.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de centro" }
               ]
             }
           },
@@ -738,11 +753,11 @@
               metrica: "⚡ Velocidad remate: 74 km/h",
               alerta: "❌ 1-0 Unión Magdalena",
               spots: [
-                { x: 42, y: 56, radius: 26, color: '#ef4444', label: "F. Molina (#9)", sub: "Definición 1-0" },
-                { x: 48, y: 52, radius: 20, color: '#f59e0b', label: "Jhon Figueroa (#1)", sub: "Achique portería" }
+                { x: 42.0, y: 56.0, radius: 26, color: '#ef4444', label: "F. Molina (#9)", sub: "Definición 1-0" },
+                { x: 48.0, y: 52.0, radius: 20, color: '#f59e0b', label: "Jhon Figueroa (#1)", sub: "Achique portería" }
               ],
               lineas: [
-                { x1: 42, y1: 56, x2: 47, y2: 51, color: '#ef4444', dash: [], arrow: true, label: "Remate al palo" }
+                { x1: 42.0, y1: 56.0, x2: 47.0, y2: 51.0, color: '#ef4444', dash: [], arrow: true, label: "Remate al palo" }
               ]
             }
           },
@@ -757,8 +772,18 @@
               descIA: "Indicación del cuerpo técnico: sincronizar el repliegue y achicar distancia con el lateral izquierdo.",
               metrica: "📐 Distancia objetivo: ≤ 8 m",
               alerta: "🛡️ Reorganización Leones",
-              lineas: [
-                { x1: 30, y1: 64, x2: 70, y2: 64, color: '#10b981', dash: [6, 4], arrow: false, label: "Línea defensiva corregida" }
+              connectedGroups: [
+                {
+                  tipo: 'linea_reorganizada',
+                  color: '#10b981',
+                  label: "🛡️ Línea Defensiva Reorganizada",
+                  jugadores: [
+                    { x: 30.0, y: 64.0, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                    { x: 44.0, y: 64.0, color: '#10b981', label: "Central Der", sub: "Leones" },
+                    { x: 58.0, y: 64.0, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                    { x: 72.0, y: 64.0, color: '#10b981', label: "Lateral Izq", sub: "Leones" }
+                  ]
+                }
               ]
             }
           }
@@ -786,11 +811,20 @@
               descIA: "Transición negativa activada. El equipo queda desplegado en amplitud y desprotegido por dentro.",
               metrica: "⏱️ Tiempo de repliegue: 2.1s",
               alerta: "⚠️ Transición Ofensiva Rival",
-              spots: [
-                { x: 50, y: 62, radius: 24, color: '#ef4444', label: "Zona de Pérdida", sub: "Presión samaria" }
+              connectedGroups: [
+                {
+                  tipo: 'transicion_negativa',
+                  color: '#ef4444',
+                  dash: [6, 4],
+                  label: "Pérdida & Presión Rival",
+                  jugadores: [
+                    { x: 48.0, y: 60.0, color: '#ef4444', label: "Pérdida en Salida", sub: "Leones" },
+                    { x: 58.0, y: 64.0, color: '#38bdf8', label: "Recuperador Samario", sub: "Unión" }
+                  ]
+                }
               ],
               lineas: [
-                { x1: 50, y1: 62, x2: 44, y2: 72, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pase interceptado" }
+                { x1: 58.0, y1: 64.0, x2: 42.0, y2: 70.0, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pase de contragolpe" }
               ]
             }
           },
@@ -805,16 +839,24 @@
               descIA: "Pivotes de contención superados. Intervalo libre de 12.8 m entre volantes y defensas centrales.",
               metrica: "📐 Brecha central: 12.8 m",
               alerta: "🚨 Falta táctica preventiva omitida",
+              connectedGroups: [
+                {
+                  tipo: 'bloque_central',
+                  color: '#10b981',
+                  brechaIndex: 0,
+                  brechaLabel: "⚠️ Brecha Central: 12.8 m",
+                  jugadores: [
+                    { x: 39.5, y: 57.1, color: '#ef4444', label: "Central Izquierdo", sub: "Leones F.C." },
+                    { x: 62.9, y: 56.5, color: '#ef4444', label: "Central Derecho", sub: "Leones F.C." },
+                    { x: 87.3, y: 52.2, color: '#10b981', label: "Lateral Derecho", sub: "Leones F.C." }
+                  ]
+                }
+              ],
               spots: [
-                { x: 52, y: 58, radius: 26, color: '#f59e0b', label: "Manuel Ballesteros", sub: "Espacio entre líneas" },
-                { x: 38, y: 65, radius: 22, color: '#ef4444', label: "Central Izquierdo", sub: "Retroceso condicionado" }
+                { x: 51.5, y: 52.0, radius: 28, color: '#f59e0b', label: "Manuel Ballesteros", sub: "Quiebre y remate" }
               ],
               lineas: [
-                { x1: 34, y1: 66, x2: 68, y2: 66, color: '#ef4444', dash: [6, 4], arrow: false, label: "Línea de contención rota (12.8 m)" },
-                { x1: 44, y1: 50, x2: 50, y2: 56, color: '#10b981', dash: [], arrow: true, label: "Cobertura de pivote requerida" }
-              ],
-              zonas: [
-                { points: [{x:42, y:52}, {x:62, y:52}, {x:60, y:68}, {x:38, y:68}], color: 'rgba(239, 68, 68, 0.22)', stroke: '#ef4444', label: "Callejón Central Vulnerado" }
+                { x1: 51.5, y1: 52.0, x2: 44.0, y2: 60.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria remate" }
               ]
             }
           },
@@ -830,10 +872,11 @@
               metrica: "⚡ Velocidad remate: 82 km/h",
               alerta: "❌ 2-0 Unión Magdalena",
               spots: [
-                { x: 52, y: 62, radius: 26, color: '#f59e0b', label: "M. Ballesteros", sub: "Remate ajustado" }
+                { x: 52.0, y: 62.0, radius: 26, color: '#f59e0b', label: "M. Ballesteros", sub: "Remate ajustado" },
+                { x: 40.0, y: 54.0, radius: 22, color: '#ef4444', label: "Jhon Figueroa (#1)", sub: "Estirada" }
               ],
               lineas: [
-                { x1: 52, y1: 62, x2: 44, y2: 52, color: '#f59e0b', dash: [], arrow: true, label: "Trayectoria rasante" }
+                { x1: 52.0, y1: 62.0, x2: 44.0, y2: 52.0, color: '#f59e0b', dash: [], arrow: true, label: "Trayectoria rasante" }
               ]
             }
           },
@@ -848,8 +891,16 @@
               descIA: "Orden técnica: Reducir distancia entre el mediocentro defensivo y los centrales a menos de 8 metros.",
               metrica: "📐 Distancia óptima: 7.5 m",
               alerta: "🛡️ Ajuste de Doble Pivote",
-              lineas: [
-                { x1: 40, y1: 60, x2: 60, y2: 60, color: '#10b981', dash: [4, 4], arrow: false, label: "Bloque 2 pivotes cerrado" }
+              connectedGroups: [
+                {
+                  tipo: 'pivotes',
+                  color: '#10b981',
+                  label: "Doble Pivote Ajustado (≤ 8 m)",
+                  jugadores: [
+                    { x: 44.0, y: 60.0, color: '#10b981', label: "Pivote 1", sub: "Leones" },
+                    { x: 56.0, y: 60.0, color: '#10b981', label: "Pivote 2", sub: "Leones" }
+                  ]
+                }
               ]
             }
           }
@@ -874,11 +925,29 @@
             desc: "Min 18:15 • El guardameta Manuel Tasso ubica el balón en el área pequeña.",
             tele: {
               tituloIA: "Disposición Táctica en Balón Parado",
-              descIA: "Leones adelanta líneas y sitúa el bloque medio en 42 metros de su propia portería.",
+              descIA: "Leones adelanta líneas y sitúa el bloque de presión alta sobre la salida corta de Unión Magdalena.",
               metrica: "📐 Altura de bloque: 42 m",
               alerta: "✅ Posicionamiento Correcto",
-              lineas: [
-                { x1: 20, y1: 65, x2: 80, y2: 65, color: '#10b981', dash: [6, 4], arrow: false, label: "Línea de contención media" }
+              connectedGroups: [
+                {
+                  tipo: 'salida_rival',
+                  color: '#38bdf8',
+                  label: "Salida Corta Unión Magdalena",
+                  jugadores: [
+                    { x: 39.0, y: 50.0, color: '#38bdf8', label: "Central 1", sub: "Unión" },
+                    { x: 59.0, y: 49.0, color: '#38bdf8', label: "Central 2", sub: "Unión" },
+                    { x: 82.0, y: 50.0, color: '#38bdf8', label: "Lateral", sub: "Unión" }
+                  ]
+                },
+                {
+                  tipo: 'presion_leones',
+                  color: '#f59e0b',
+                  label: "Presión Alta Auriverde",
+                  jugadores: [
+                    { x: 77.0, y: 48.0, color: '#f59e0b', label: "Delantero 1", sub: "Leones" },
+                    { x: 93.0, y: 46.0, color: '#f59e0b', label: "Delantero 2", sub: "Leones" }
+                  ]
+                }
               ]
             }
           },
@@ -893,16 +962,18 @@
               descIA: "Excelente perfil corporal del canterano de Ditaires. Vigilancia activa y distancia perfecta con el central izquierdo.",
               metrica: "📐 Distancia con central: 7.2 m",
               alerta: "🦁 Cantera Sub-20 en Acción",
-              spots: [
-                { x: 30, y: 66, radius: 28, color: '#f59e0b', label: "Nicolás Restrepo (#24)", sub: "Lateral Izq. Canterano" },
-                { x: 48, y: 64, radius: 22, color: '#10b981', label: "Central Izquierdo", sub: "Cobertura alineada" }
-              ],
-              lineas: [
-                { x1: 30, y1: 66, x2: 48, y2: 64, color: '#10b981', dash: [], arrow: false, label: "Sincronía defensiva: 7.2 m" },
-                { x1: 30, y1: 66, x2: 24, y2: 56, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Carril de repliegue" }
-              ],
-              zonas: [
-                { points: [{x:22, y:60}, {x:54, y:60}, {x:52, y:72}, {x:20, y:72}], color: 'rgba(16, 185, 129, 0.18)', stroke: '#10b981', label: "Zona de Cobertura Asegurada" }
+              connectedGroups: [
+                {
+                  tipo: 'linea_defensiva',
+                  color: '#10b981',
+                  label: "🛡️ Línea Defensiva de 4 (Sincronizada)",
+                  jugadores: [
+                    { x: 44.5, y: 68.7, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                    { x: 58.5, y: 65.1, color: '#10b981', label: "Central Der", sub: "Leones" },
+                    { x: 72.8, y: 64.4, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                    { x: 85.9, y: 83.8, color: '#f59e0b', label: "Nicolás Restrepo (#24)", sub: "Lateral Cantera Sub-20" }
+                  ]
+                }
               ]
             }
           },
@@ -917,9 +988,29 @@
               descIA: "Bloque defensivo compacto de Leones. Distancia entre línea de defensas y volantes reducida a 11.4 metros.",
               metrica: "📐 Distancia interlíneas: 11.4 m",
               alerta: "🛡️ Bloque Compacto",
-              lineas: [
-                { x1: 18, y1: 68, x2: 78, y2: 68, color: '#10b981', dash: [], arrow: false, label: "Línea Defensiva de 4" },
-                { x1: 22, y1: 56, x2: 74, y2: 56, color: '#f59e0b', dash: [], arrow: false, label: "Línea de 4 Volantes" }
+              connectedGroups: [
+                {
+                  tipo: 'linea_defensiva',
+                  color: '#10b981',
+                  label: "Línea de 4 Defensores",
+                  jugadores: [
+                    { x: 44.5, y: 68.7, color: '#10b981', label: "Lateral Der", sub: "Leones" },
+                    { x: 58.5, y: 65.1, color: '#10b981', label: "Central Der", sub: "Leones" },
+                    { x: 72.8, y: 64.4, color: '#10b981', label: "Central Izq", sub: "Leones" },
+                    { x: 85.9, y: 83.8, color: '#10b981', label: "Restrepo #24", sub: "Leones" }
+                  ]
+                },
+                {
+                  tipo: 'linea_medios',
+                  color: '#f59e0b',
+                  label: "Línea de 4 Mediocampistas",
+                  jugadores: [
+                    { x: 40.0, y: 49.0, color: '#f59e0b', label: "Volante Der", sub: "Leones" },
+                    { x: 53.0, y: 47.0, color: '#f59e0b', label: "Pivote 1", sub: "Leones" },
+                    { x: 67.0, y: 46.0, color: '#f59e0b', label: "Pivote 2", sub: "Leones" },
+                    { x: 80.0, y: 44.0, color: '#f59e0b', label: "Volante Izq", sub: "Leones" }
+                  ]
+                }
               ]
             }
           },
@@ -934,14 +1025,18 @@
               descIA: "Cierre total de líneas de pase. Unión se ve obligada al balonazo largo sin destinatario.",
               metrica: "📊 Eficacia de presión: 100%",
               alerta: "✅ Recuperación de Balón",
+              spots: [
+                { x: 65.0, y: 45.0, radius: 24, color: '#38bdf8', label: "Tasso (Arquero Unión)", sub: "Balonazo forzado" },
+                { x: 35.0, y: 65.0, radius: 26, color: '#10b981', label: "Recuperación Leones", sub: "Bloque cerrado" }
+              ],
               lineas: [
-                { x1: 65, y1: 45, x2: 35, y2: 65, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pelotazo forzado rival" }
+                { x1: 65.0, y1: 45.0, x2: 35.0, y2: 65.0, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pelotazo forzado al vacío" }
               ]
             }
           }
         ],
         analisis: "<strong>Evaluación Individual (Nicolás Restrepo #24):</strong> Gran rigor táctico del lateral canterano de la Sub-20. Mantiene la distancia de seguridad con el defensa central, cierra el pase entre líneas y obliga al rival al pelotazo forzado.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:14 para ver el Telestration IA automático del marcaje de Nicolás Restrepo #24.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:14 para ver los círculos tácticos y la línea de 4 conectando a Nicolás Restrepo #24.",
         colorBadge: "emerald"
       },
       clip_4: {
@@ -963,8 +1058,17 @@
               descIA: "Arrastre al segundo palo para vaciar el primer poste a la llegada del goleador.",
               metrica: "📐 Zona diana: Primer Palo",
               alerta: "🦁 Estrategia de Córner",
-              lineas: [
-                { x1: 55, y1: 52, x2: 65, y2: 50, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Movimiento de arrastre" }
+              connectedGroups: [
+                {
+                  tipo: 'bloque_cabeceadores',
+                  color: '#f59e0b',
+                  dash: [4, 4],
+                  label: "Bloque de Cabeceadores Leones",
+                  jugadores: [
+                    { x: 52.0, y: 52.0, color: '#f59e0b', label: "Cabeceador 1", sub: "Arrastre" },
+                    { x: 62.0, y: 50.0, color: '#f59e0b', label: "Cabeceador 2", sub: "Arrastre" }
+                  ]
+                }
               ]
             }
           },
@@ -980,7 +1084,7 @@
               metrica: "⚡ Velocidad envío: 68 km/h",
               alerta: "🎯 Centro Preciso",
               lineas: [
-                { x1: 15, y1: 72, x2: 48, y2: 52, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de rosca" }
+                { x1: 15.0, y1: 72.0, x2: 48.0, y2: 52.0, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de rosca" }
               ]
             }
           },
@@ -995,14 +1099,22 @@
               descIA: "Salto de 64 cm superando la marca doble. Giro de cuello perfecto y frentazo imparable a la escuadra.",
               metrica: "📐 Elevación de salto: 64 cm",
               alerta: "⚽ GOL DE LEONES (2-1)",
+              connectedGroups: [
+                {
+                  tipo: 'defensa_rival',
+                  color: '#ef4444',
+                  label: "Marcaje Doble Superado",
+                  jugadores: [
+                    { x: 44.0, y: 53.0, color: '#ef4444', label: "Central Rival", sub: "Unión" },
+                    { x: 53.0, y: 52.0, color: '#ef4444', label: "Líbero Rival", sub: "Unión" }
+                  ]
+                }
+              ],
               spots: [
-                { x: 48, y: 52, radius: 28, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Goleador Auriverde" }
+                { x: 48.0, y: 50.0, radius: 28, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Anticipación y Gol" }
               ],
               lineas: [
-                { x1: 48, y1: 52, x2: 56, y2: 44, color: '#10b981', dash: [], arrow: true, label: "Cabezazo a la red" }
-              ],
-              zonas: [
-                { points: [{x:44, y:46}, {x:54, y:46}, {x:52, y:56}, {x:42, y:56}], color: 'rgba(245, 158, 11, 0.25)', stroke: '#f59e0b', label: "Zona de Impacto Óptimo" }
+                { x1: 48.0, y1: 50.0, x2: 56.0, y2: 44.0, color: '#10b981', dash: [], arrow: true, label: "Cabezazo a la red" }
               ]
             }
           },
@@ -1056,8 +1168,17 @@
               descIA: "Defensa rival desarticulada ante el centro cerrado. Balón suelto a la espera del cazador.",
               metrica: "⏱️ Balón suelto: 0.42s",
               alerta: "⚠️ Oportunidad Crítica",
-              zonas: [
-                { points: [{x:46, y:52}, {x:60, y:52}, {x:58, y:64}, {x:44, y:64}], color: 'rgba(16, 185, 129, 0.2)', stroke: '#10b981', label: "Zona de Rebote Vivo" }
+              connectedGroups: [
+                {
+                  tipo: 'rebote_vivo',
+                  color: '#38bdf8',
+                  label: "Zaga Samaria Desarticulada",
+                  jugadores: [
+                    { x: 42.0, y: 52.0, color: '#38bdf8', label: "Arquero Tasso", sub: "Unión" },
+                    { x: 48.0, y: 56.0, color: '#38bdf8', label: "Defensor Samario", sub: "Unión" },
+                    { x: 62.0, y: 54.0, color: '#38bdf8', label: "Rebote Vivo", sub: "Área Chica" }
+                  ]
+                }
               ]
             }
           },
@@ -1072,11 +1193,23 @@
               descIA: "Reacción en 0.42 segundos para fusilar la red rival. Gol del empate heroico en Santa Marta.",
               metrica: "⚡ Reacción: 0.42 s • 78 km/h",
               alerta: "🔥 EMPATE HISTÓRICO (2-2)",
+              connectedGroups: [
+                {
+                  tipo: 'remate_agonico',
+                  color: '#38bdf8',
+                  dash: [4, 4],
+                  label: "Zaga Batida Unión Magdalena",
+                  jugadores: [
+                    { x: 42.0, y: 52.0, color: '#38bdf8', label: "Tasso (Arquero)", sub: "Batido" },
+                    { x: 48.0, y: 56.0, color: '#38bdf8', label: "Defensor 1", sub: "Superado" }
+                  ]
+                }
+              ],
               spots: [
-                { x: 54, y: 58, radius: 28, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "El Héroe del 90+3'" }
+                { x: 54.0, y: 58.0, radius: 28, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "El Héroe del 90+3'" }
               ],
               lineas: [
-                { x1: 54, y1: 58, x2: 60, y2: 48, color: '#10b981', dash: [], arrow: true, label: "Remate cruzado imparable" }
+                { x1: 54.0, y1: 58.0, x2: 43.0, y2: 48.0, color: '#10b981', dash: [], arrow: true, label: "Disparo a la red (90+3')" }
               ]
             }
           },
@@ -1095,7 +1228,7 @@
           }
         ],
         analisis: "<strong>Carácter y Sentido de Oportunidad:</strong> Léider Pacheco (#17) entró como revulsivo e interpretó con frialdad el segundo balón en tiempo suplementario. Este clip resume el ADN guerrero de Itagüí Leones: presionar y creer hasta el último suspiro del cronómetro.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:16 para ver el Telestration IA automático del gol agónico de Léider Pacheco #17.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:16 para ver los círculos tácticos y la definición de Léider Pacheco #17.",
         colorBadge: "emerald"
       }
     };
@@ -1490,12 +1623,14 @@
         matchVideo.pause(); // Pausar video automáticamente para dibujar sobre el frame
         initCanvas();
         canvas.classList.remove('hidden');
+        canvas.style.pointerEvents = 'auto';
         tools.classList.remove('hidden');
         btn.classList.add('bg-amber-400', 'text-slate-950');
         btn.classList.remove('bg-amber-500/20', 'text-amber-400');
         text.innerText = 'Desactivar Pizarra';
       } else {
         canvas.classList.add('hidden');
+        canvas.style.pointerEvents = 'none';
         tools.classList.add('hidden');
         btn.classList.remove('bg-amber-400', 'text-slate-950');
         btn.classList.add('bg-amber-500/20', 'text-amber-400');
@@ -1563,6 +1698,11 @@
     let currentEventIdx = 0;
 
     function drawRoundRect(ctx, x, y, w, h, r) {
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        return;
+      }
       if (w < 2 * r) r = w / 2;
       if (h < 2 * r) r = h / 2;
       ctx.beginPath();
@@ -1570,7 +1710,7 @@
       ctx.arcTo(x + w, y, x + w, y + h, r);
       ctx.arcTo(x + w, y + h, x, y + h, r);
       ctx.arcTo(x, y + h, x, y, r);
-      ctx.arcTo(x, y + w, x, y, r);
+      ctx.arcTo(x, y, x + r, y, r);
       ctx.closePath();
     }
 
@@ -1584,15 +1724,16 @@
       matchVideo.pause();
       matchVideo.currentTime = ev.sec;
 
-      // 2. Preparar el canvas
+      // 2. Preparar el canvas (pointer-events-none para que nunca bloquee los clics en el video)
       canvas.classList.remove('hidden');
+      canvas.style.pointerEvents = 'none';
       initCanvas();
       modoTelestrationActivo = true;
 
       // 3. Renderizar telestration táctico estilo televisión
       renderTelestration(ev.tele, ev.titulo, ev.desc);
 
-      // Redibujar en 'seeked' para garantizar sincronía exacta con el frame
+      // Redibujar en 'seeked' para garantizar sincronía exacta con el frame decodificado
       const onSeeked = () => {
         if (modoTelestrationActivo && currentClipKey === clipKey && currentEventIdx === eventIdx) {
           initCanvas();
@@ -1630,7 +1771,154 @@
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. ZONAS TÁCTICAS (ESPACIOS CONCEDIDOS O DE REMATE)
+      // 1. GRUPOS DE JUGADORES CONECTADOS (LÍNEAS TÁCTICAS QUE UNEN JUGADOR A JUGADOR EN PERSPECTIVA)
+      if (tele.connectedGroups && tele.connectedGroups.length > 0) {
+        tele.connectedGroups.forEach(g => {
+          if (!g.jugadores || g.jugadores.length < 2) return;
+
+          // Dibujar líneas entre jugadores consecutivos (sigue la perspectiva real del césped)
+          for (let i = 0; i < g.jugadores.length - 1; i++) {
+            const p1 = g.jugadores[i];
+            const p2 = g.jugadores[i + 1];
+            const x1 = (p1.x / 100) * w;
+            const y1 = (p1.y / 100) * h;
+            const x2 = (p2.x / 100) * w;
+            const y2 = (p2.y / 100) * h;
+
+            const isBreach = (g.brechaIndex === i);
+            const lineColor = isBreach ? '#ef4444' : (g.color || '#10b981');
+            const isDashed = isBreach || g.dash;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = isBreach ? 4 : (g.width || 3.5);
+            if (isDashed) ctx.setLineDash([7, 5]);
+            else ctx.setLineDash([]);
+            ctx.shadowColor = lineColor;
+            ctx.shadowBlur = isBreach ? 12 : 6;
+            ctx.stroke();
+
+            // Etiqueta en medio de este segmento específico si hay brecha
+            if (isBreach && g.brechaLabel) {
+              const midX = (x1 + x2) / 2;
+              const midY = (y1 + y2) / 2;
+              ctx.font = 'bold 10px sans-serif';
+              const tw = ctx.measureText(g.brechaLabel).width + 16;
+              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 1.5;
+              ctx.setLineDash([]);
+              drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
+              ctx.fill();
+              ctx.stroke();
+
+              ctx.fillStyle = '#fca5a5';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(g.brechaLabel, midX, midY);
+            }
+            ctx.restore();
+          }
+
+          // Etiqueta general del grupo si no es brecha
+          if (g.label && g.brechaIndex === undefined) {
+            const first = g.jugadores[0];
+            const last = g.jugadores[g.jugadores.length - 1];
+            const midX = ((first.x + last.x) / 2 / 100) * w;
+            const midY = ((first.y + last.y) / 2 / 100) * h - 16;
+
+            ctx.save();
+            ctx.font = 'bold 11px sans-serif';
+            const tw = ctx.measureText(g.label).width + 16;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = g.color || '#10b981';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            drawRoundRect(ctx, midX - tw / 2, midY - 11, tw, 22, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(g.label, midX, midY);
+            ctx.restore();
+          }
+
+          // Dibujar el círculo brillante bajo cada jugador del grupo
+          g.jugadores.forEach(j => {
+            const cx = (j.x / 100) * w;
+            const cy = (j.y / 100) * h;
+            const rx = (j.radius || 24) * (w / 650);
+            const ry = rx * 0.45;
+            const jColor = j.color || g.color || '#10b981';
+
+            ctx.save();
+            // Anillo exterior punteado
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = jColor;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+
+            // Anillo base brillante con perspectiva 3D
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `${jColor}35`;
+            ctx.fill();
+            ctx.strokeStyle = jColor;
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            ctx.shadowColor = jColor;
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+
+            // Etiqueta del jugador
+            if (j.label) {
+              ctx.font = 'bold 10px sans-serif';
+              const labelW = Math.max(ctx.measureText(j.label).width, j.sub ? ctx.measureText(j.sub).width : 0) + 14;
+              const boxH = j.sub ? 28 : 18;
+              const boxY = cy - ry - 14 - boxH;
+
+              // Línea de conexión a etiqueta
+              ctx.beginPath();
+              ctx.moveTo(cx, cy - ry);
+              ctx.lineTo(cx, cy - ry - 14);
+              ctx.strokeStyle = jColor;
+              ctx.lineWidth = 1.5;
+              ctx.shadowBlur = 0;
+              ctx.stroke();
+
+              ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+              ctx.strokeStyle = jColor;
+              ctx.lineWidth = 1.5;
+              drawRoundRect(ctx, cx - labelW / 2, boxY, labelW, boxH, 5);
+              ctx.fill();
+              ctx.stroke();
+
+              ctx.fillStyle = '#ffffff';
+              ctx.textAlign = 'center';
+              if (j.sub) {
+                ctx.textBaseline = 'top';
+                ctx.fillText(j.label, cx, boxY + 3);
+                ctx.font = 'bold 8.5px sans-serif';
+                ctx.fillStyle = jColor;
+                ctx.fillText(j.sub, cx, boxY + 15);
+              } else {
+                ctx.textBaseline = 'middle';
+                ctx.fillText(j.label, cx, boxY + boxH / 2);
+              }
+            }
+            ctx.restore();
+          });
+        });
+      }
+
+      // 2. ZONAS TÁCTICAS (ESPACIOS CONCEDIDOS O DE REMATE)
       if (tele.zonas && tele.zonas.length > 0) {
         tele.zonas.forEach(z => {
           ctx.save();
@@ -1674,7 +1962,7 @@
         });
       }
 
-      // 2. LÍNEAS Y VECTORES TÁCTICOS
+      // 3. LÍNEAS Y VECTORES TÁCTICOS INDIVIDUALES
       if (tele.lineas && tele.lineas.length > 0) {
         tele.lineas.forEach(l => {
           ctx.save();
@@ -1728,7 +2016,7 @@
         });
       }
 
-      // 3. ANILLOS / SPOTLIGHTS SOBRE JUGADORES (BROADCAST)
+      // 4. ANILLOS / SPOTLIGHTS INDIVIDUALES SOBRE JUGADORES
       if (tele.spots && tele.spots.length > 0) {
         tele.spots.forEach(s => {
           ctx.save();
@@ -1760,7 +2048,7 @@
           // Línea vertical hacia la etiqueta
           ctx.beginPath();
           ctx.moveTo(cx, cy - ry);
-          ctx.lineTo(cx, cy - ry - 22);
+          ctx.lineTo(cx, cy - ry - 20);
           ctx.strokeStyle = s.color || '#f59e0b';
           ctx.lineWidth = 1.5;
           ctx.shadowBlur = 0;
@@ -1771,7 +2059,7 @@
             ctx.font = 'bold 11px sans-serif';
             const labelW = Math.max(ctx.measureText(s.label).width, s.sub ? ctx.measureText(s.sub).width : 0) + 16;
             const boxH = s.sub ? 32 : 20;
-            const boxY = cy - ry - 22 - boxH;
+            const boxY = cy - ry - 20 - boxH;
 
             ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
             ctx.strokeStyle = s.color || '#f59e0b';
@@ -1800,15 +2088,21 @@
 
     function reanudarJugada() {
       limpiarTelestration(false);
-      matchVideo.play();
+      try {
+        const p = matchVideo.play();
+        if (p !== undefined) {
+          p.catch(err => console.warn("Video play promise caught:", err));
+        }
+      } catch (e) {
+        console.warn("Play error:", e);
+      }
     }
 
     function limpiarTelestration(mantenerPausado) {
       modoTelestrationActivo = false;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!modoDibujo) {
-        canvas.classList.add('hidden');
-      }
+      canvas.classList.add('hidden');
+      canvas.style.pointerEvents = 'none';
       const miniBadge = document.getElementById('telestrationMiniBadge');
       if (miniBadge) miniBadge.classList.add('hidden');
       const card = document.getElementById('telestrationCard');
@@ -1846,8 +2140,12 @@
     }
 
     matchVideo.addEventListener('play', () => {
-      if (modoTelestrationActivo) {
-        limpiarTelestration(false);
+      limpiarTelestration(false);
+    });
+
+    matchVideo.addEventListener('click', () => {
+      if (modoTelestrationActivo && matchVideo.paused) {
+        reanudarJugada();
       }
     });
 
