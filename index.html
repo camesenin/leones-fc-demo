@@ -246,29 +246,37 @@
               <!-- Canvas transparente para dibujo táctico -->
               <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-auto"></canvas>
 
-              <!-- TARJETA HUD DE TELESTRATION AUTOMÁTICO (BROADCAST OVERLAY) -->
-              <div id="telestrationCard" class="hidden absolute top-2 left-2 right-2 sm:right-auto sm:max-w-md bg-slate-950/95 backdrop-blur-md border border-amber-400/80 rounded-xl p-2.5 sm:p-3 shadow-2xl z-30 transition-all duration-300">
-                <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
-                  <div class="flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                    <span class="text-[10px] font-black uppercase text-amber-300 tracking-wider">Telestration IA Automático • Broadcast</span>
-                  </div>
-                  <button type="button" onclick="cerrarTelestration()" class="text-slate-400 hover:text-white text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 cursor-pointer">✕ Cerrar</button>
+              <!-- Mini badge sutil en esquina del video (NO obstruye el campo) -->
+              <div id="telestrationMiniBadge" class="hidden absolute top-2.5 left-2.5 bg-slate-950/85 backdrop-blur-md border border-amber-400/80 px-2.5 py-1 rounded-full text-[10px] font-black text-amber-300 flex items-center space-x-1.5 shadow-lg z-30 pointer-events-none">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <span>✨ IA BROADCAST • TELESTRATION</span>
+              </div>
+            </div>
+
+            <!-- TARJETA HUD DE TELESTRATION (DEBAJO DEL VIDEO PARA DEJAR 100% VISIBLE EL CÉSPED Y LA JUGADA) -->
+            <div id="telestrationCard" class="hidden bg-slate-950/95 border-b border-t border-amber-400/80 p-3 sm:p-4 space-y-2 transition-all duration-300 bg-gradient-to-r from-slate-950 via-emerald-950/40 to-slate-950">
+              <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  <span class="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-wider">Telestration IA Automático • Cuadro Táctico</span>
                 </div>
-                <p id="teleCardTitulo" class="text-xs font-black text-white mt-1.5">Fijación y quiebre de línea</p>
-                <p id="teleCardDesc" class="text-[11px] text-slate-300 mt-0.5 leading-tight">El volante rival arrastra la marca al carril central mientras la zaga queda desalineada.</p>
-                <div class="mt-2 flex items-center justify-between text-[10px] bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 font-mono">
-                  <span id="teleCardMetrica" class="text-emerald-300 font-bold">📐 Brecha: 12.8 m</span>
-                  <span id="teleCardAlerta" class="text-amber-400 font-bold">⚠️ Cobertura requerida</span>
-                </div>
-                <div class="mt-2 flex items-center space-x-2">
-                  <button type="button" onclick="reanudarJugada()" class="flex-1 py-1.5 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black text-xs rounded-lg transition flex items-center justify-center space-x-1.5 shadow cursor-pointer border border-emerald-500/40">
-                    <span>▶️ Reanudar Jugada</span>
-                  </button>
-                  <button type="button" onclick="activarModoLapizManual()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg cursor-pointer">
-                    ✏️ Dibujar
-                  </button>
-                </div>
+                <button type="button" onclick="cerrarTelestration()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-0.5 rounded bg-slate-800 cursor-pointer">✕ Cerrar</button>
+              </div>
+              <div>
+                <p id="teleCardTitulo" class="text-xs sm:text-sm font-black text-white">Fijación y quiebre de línea</p>
+                <p id="teleCardDesc" class="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">El volante rival arrastra la marca al carril central mientras la zaga queda desalineada.</p>
+              </div>
+              <div class="flex items-center justify-between text-[10px] sm:text-xs bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 font-mono flex-wrap gap-2">
+                <span id="teleCardMetrica" class="text-emerald-300 font-bold">📐 Brecha: 12.8 m</span>
+                <span id="teleCardAlerta" class="text-amber-400 font-bold">⚠️ Cobertura requerida</span>
+              </div>
+              <div class="flex items-center space-x-2 pt-1">
+                <button type="button" onclick="reanudarJugada()" class="flex-1 py-2 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black text-xs sm:text-sm rounded-xl transition flex items-center justify-center space-x-1.5 shadow cursor-pointer border border-emerald-500/40">
+                  <span>▶️ Reanudar Jugada</span>
+                </button>
+                <button type="button" onclick="activarModoLapizManual()" class="py-2 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-bold rounded-xl cursor-pointer border border-slate-700">
+                  ✏️ Dibujar
+                </button>
               </div>
             </div>
 
@@ -1577,14 +1585,26 @@
       matchVideo.currentTime = ev.sec;
 
       // 2. Preparar el canvas
-      initCanvas();
       canvas.classList.remove('hidden');
+      initCanvas();
       modoTelestrationActivo = true;
 
       // 3. Renderizar telestration táctico estilo televisión
       renderTelestration(ev.tele, ev.titulo, ev.desc);
 
-      // 4. Mostrar tarjeta HUD flotante
+      // Redibujar en 'seeked' para garantizar sincronía exacta con el frame
+      const onSeeked = () => {
+        if (modoTelestrationActivo && currentClipKey === clipKey && currentEventIdx === eventIdx) {
+          initCanvas();
+          renderTelestration(ev.tele, ev.titulo, ev.desc);
+        }
+      };
+      matchVideo.addEventListener('seeked', onSeeked, { once: true });
+
+      // 4. Mostrar tarjeta HUD (debajo del video) y mini badge en la esquina
+      const miniBadge = document.getElementById('telestrationMiniBadge');
+      if (miniBadge) miniBadge.classList.remove('hidden');
+
       const card = document.getElementById('telestrationCard');
       if (card) {
         document.getElementById('teleCardTitulo').innerText = ev.tele?.tituloIA || ev.titulo;
@@ -1622,10 +1642,10 @@
             else ctx.lineTo(px, py);
           });
           ctx.closePath();
-          ctx.fillStyle = z.color || 'rgba(239, 68, 68, 0.22)';
+          ctx.fillStyle = z.color || 'rgba(239, 68, 68, 0.28)';
           ctx.fill();
           ctx.strokeStyle = z.stroke || '#ef4444';
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.5;
           ctx.setLineDash(z.dash || [6, 4]);
           ctx.stroke();
 
@@ -1635,12 +1655,12 @@
             avgX = (avgX / z.points.length / 100) * w;
             avgY = (avgY / z.points.length / 100) * h;
 
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
             ctx.strokeStyle = z.stroke || '#ef4444';
             ctx.setLineDash([]);
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.5;
             const textW = ctx.measureText(z.label).width + 16;
-            drawRoundRect(ctx, avgX - textW/2, avgY - 10, textW, 20, 6);
+            drawRoundRect(ctx, avgX - textW/2, avgY - 11, textW, 22, 6);
             ctx.fill();
             ctx.stroke();
 
@@ -1667,13 +1687,13 @@
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
           ctx.strokeStyle = l.color || '#f59e0b';
-          ctx.lineWidth = l.width || 3;
+          ctx.lineWidth = l.width || 3.5;
           if (l.dash) ctx.setLineDash(l.dash);
           else ctx.setLineDash([]);
           ctx.stroke();
 
           if (l.arrow) {
-            const headlen = 12;
+            const headlen = 13;
             const angle = Math.atan2(y2 - y1, x2 - x1);
             ctx.fillStyle = l.color || '#f59e0b';
             ctx.beginPath();
@@ -1689,12 +1709,12 @@
             const midY = (y1 + y2) / 2;
             ctx.save();
             ctx.font = 'bold 10px sans-serif';
-            const textWidth = ctx.measureText(l.label).width + 14;
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            const textWidth = ctx.measureText(l.label).width + 16;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
             ctx.strokeStyle = l.color || '#f59e0b';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.5;
             ctx.setLineDash([]);
-            drawRoundRect(ctx, midX - textWidth / 2, midY - 10, textWidth, 20, 6);
+            drawRoundRect(ctx, midX - textWidth / 2, midY - 11, textWidth, 22, 6);
             ctx.fill();
             ctx.stroke();
 
@@ -1714,7 +1734,7 @@
           ctx.save();
           const cx = (s.x / 100) * w;
           const cy = (s.y / 100) * h;
-          const rx = (s.radius || 26) * (w / 700);
+          const rx = (s.radius || 26) * (w / 650);
           const ry = rx * 0.45;
 
           // Anillo exterior punteado
@@ -1728,7 +1748,7 @@
           // Anillo base con brillo de neón
           ctx.beginPath();
           ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-          ctx.fillStyle = s.color ? `${s.color}33` : 'rgba(245, 158, 11, 0.2)';
+          ctx.fillStyle = s.color ? `${s.color}35` : 'rgba(245, 158, 11, 0.25)';
           ctx.fill();
           ctx.strokeStyle = s.color || '#f59e0b';
           ctx.lineWidth = 3;
@@ -1740,7 +1760,7 @@
           // Línea vertical hacia la etiqueta
           ctx.beginPath();
           ctx.moveTo(cx, cy - ry);
-          ctx.lineTo(cx, cy - ry - 26);
+          ctx.lineTo(cx, cy - ry - 22);
           ctx.strokeStyle = s.color || '#f59e0b';
           ctx.lineWidth = 1.5;
           ctx.shadowBlur = 0;
@@ -1751,7 +1771,7 @@
             ctx.font = 'bold 11px sans-serif';
             const labelW = Math.max(ctx.measureText(s.label).width, s.sub ? ctx.measureText(s.sub).width : 0) + 16;
             const boxH = s.sub ? 32 : 20;
-            const boxY = cy - ry - 26 - boxH;
+            const boxY = cy - ry - 22 - boxH;
 
             ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
             ctx.strokeStyle = s.color || '#f59e0b';
@@ -1789,6 +1809,8 @@
       if (!modoDibujo) {
         canvas.classList.add('hidden');
       }
+      const miniBadge = document.getElementById('telestrationMiniBadge');
+      if (miniBadge) miniBadge.classList.add('hidden');
       const card = document.getElementById('telestrationCard');
       if (card) card.classList.add('hidden');
     }
