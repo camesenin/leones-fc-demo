@@ -245,14 +245,45 @@
 
               <!-- Canvas transparente para dibujo táctico -->
               <canvas id="tacticalCanvas" class="canvas-overlay hidden pointer-events-auto"></canvas>
+
+              <!-- TARJETA HUD DE TELESTRATION AUTOMÁTICO (BROADCAST OVERLAY) -->
+              <div id="telestrationCard" class="hidden absolute top-2 left-2 right-2 sm:right-auto sm:max-w-md bg-slate-950/95 backdrop-blur-md border border-amber-400/80 rounded-xl p-2.5 sm:p-3 shadow-2xl z-30 transition-all duration-300">
+                <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+                  <div class="flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span class="text-[10px] font-black uppercase text-amber-300 tracking-wider">Telestration IA Automático • Broadcast</span>
+                  </div>
+                  <button type="button" onclick="cerrarTelestration()" class="text-slate-400 hover:text-white text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 cursor-pointer">✕ Cerrar</button>
+                </div>
+                <p id="teleCardTitulo" class="text-xs font-black text-white mt-1.5">Fijación y quiebre de línea</p>
+                <p id="teleCardDesc" class="text-[11px] text-slate-300 mt-0.5 leading-tight">El volante rival arrastra la marca al carril central mientras la zaga queda desalineada.</p>
+                <div class="mt-2 flex items-center justify-between text-[10px] bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 font-mono">
+                  <span id="teleCardMetrica" class="text-emerald-300 font-bold">📐 Brecha: 12.8 m</span>
+                  <span id="teleCardAlerta" class="text-amber-400 font-bold">⚠️ Cobertura requerida</span>
+                </div>
+                <div class="mt-2 flex items-center space-x-2">
+                  <button type="button" onclick="reanudarJugada()" class="flex-1 py-1.5 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black text-xs rounded-lg transition flex items-center justify-center space-x-1.5 shadow cursor-pointer border border-emerald-500/40">
+                    <span>▶️ Reanudar Jugada</span>
+                  </button>
+                  <button type="button" onclick="activarModoLapizManual()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg cursor-pointer">
+                    ✏️ Dibujar
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- BARRA DE HERRAMIENTAS TÁCTICAS -->
-            <div class="p-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <div class="flex items-center space-x-2">
-                <button id="btnModoDibujo" onclick="toggleModoDibujo()" class="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/40 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition">
+            <div class="p-3 sm:p-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 text-xs">
+              <div class="flex items-center space-x-2 flex-wrap gap-y-1.5">
+                <!-- Botón Telestration IA Rápido -->
+                <button type="button" id="btnTelestrationIA" onclick="triggerTelestrationActual()" class="px-3 py-1.5 bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-amber-500/20 hover:from-amber-500/30 text-amber-300 border border-amber-400/60 rounded-lg font-black flex items-center space-x-1.5 cursor-pointer transition shadow-md">
+                  <span class="text-sm">✨</span>
+                  <span>Telestration IA Automático</span>
+                </button>
+
+                <button id="btnModoDibujo" onclick="toggleModoDibujo()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg font-bold flex items-center space-x-1.5 cursor-pointer transition">
                   <span id="dibujoIcon">✏️</span>
-                  <span id="dibujoText">Activar Pizarra Táctica</span>
+                  <span id="dibujoText">Pizarra Manual</span>
                 </button>
 
                 <div id="herramientasDibujo" class="hidden flex items-center space-x-2 pl-2 border-l border-slate-700">
@@ -264,9 +295,9 @@
               </div>
 
               <div class="flex items-center space-x-2">
-                <button onclick="generarMicroClip()" class="px-3.5 py-1.5 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black rounded-lg shadow-md border border-emerald-500/40 flex items-center space-x-1.5 cursor-pointer transition">
+                <button onclick="generarMicroClip()" class="px-3 py-1.5 bg-[#186835] hover:bg-[#1f7e41] text-amber-300 font-black rounded-lg shadow-md border border-emerald-500/40 flex items-center space-x-1.5 cursor-pointer transition">
                   <span>⚡</span>
-                  <span>Exportar Micro-Clip al DT Arboleda</span>
+                  <span>Exportar Micro-Clip</span>
                 </button>
               </div>
             </div>
@@ -288,7 +319,7 @@
               </div>
               <span id="clipBadgeCategoria" class="px-2 py-0.5 text-[11px] font-bold bg-[#186835] text-amber-300 border border-emerald-500/30 rounded-full">Cuadro a Cuadro</span>
             </div>
-            <p class="text-xs text-slate-400 mt-2 mb-3">Haz clic en cualquier hito para saltar al segundo exacto:</p>
+            <p class="text-xs text-slate-400 mt-2 mb-3">Toca cualquier hito para pausar y ver el <span class="text-amber-400 font-bold">✨ Telestration IA Automático</span> sobre la jugada:</p>
 
             <!-- CONTENEDOR DINÁMICO DE EVENTOS DEL CLIP -->
             <div class="space-y-2" id="eventosClipContainer">
@@ -634,7 +665,7 @@
     const tiempoDisplay = document.getElementById('tiempoDisplay');
     let currentClipKey = 'clip_3';
 
-    // BASE DE DATOS DE LOS 5 CLIPS REALES DEL PARTIDO (ANÁLISIS CUADRO A CUADRO)
+    // BASE DE DATOS DE LOS 5 CLIPS REALES DEL PARTIDO (ANÁLISIS CUADRO A CUADRO & TELESTRATION IA)
     const clipsData = {
       clip_1: {
         archivo: "clip_1_gol1_rival.mp4",
@@ -644,13 +675,88 @@
         duracionSec: 35,
         categoria: "Análisis Defensivo",
         eventos: [
-          { sec: 0, timeStr: "00:00", icono: "🏃", titulo: "Inicio de progresión rival", desc: "Min 10:40 • Unión Magdalena avanza abriendo la cancha por la banda derecha." },
-          { sec: 11, timeStr: "00:11", icono: "🎯", titulo: "Centro al corazón del área chica", desc: "Min 10:51 • Centro con comba al segundo palo hacia la espalda de los defensores." },
-          { sec: 18, timeStr: "00:18", icono: "⚽", titulo: "¡Gol de Freddy Molina (1-0)!", desc: "Min 10:58 • Anticipación y definición junto al poste ante el achique de Jhon Figueroa." },
-          { sec: 25, timeStr: "00:25", icono: "📋", titulo: "Reagrupación de la zaga auriverde", desc: "Min 11:05 • Ajuste posicional inmediato para taponar el carril opuesto." }
+          {
+            sec: 0,
+            timeStr: "00:00",
+            icono: "🏃",
+            titulo: "Inicio de progresión rival",
+            desc: "Min 10:40 • Unión Magdalena avanza abriendo la cancha por la banda derecha.",
+            tele: {
+              tituloIA: "Fase 1: Progresión Rival por Banda",
+              descIA: "Unión Magdalena explota la amplitud. El extremo samario recibe con 8.4 m de margen.",
+              metrica: "📐 Amplitud concedida: 8.4 m",
+              alerta: "⚠️ Retraso en achique",
+              spots: [
+                { x: 74, y: 55, radius: 24, color: '#f59e0b', label: "Extremo Unión", sub: "Avance libre" }
+              ],
+              lineas: [
+                { x1: 74, y1: 55, x2: 66, y2: 62, color: '#f59e0b', dash: [6, 4], arrow: true, label: "Carril de avance" }
+              ]
+            }
+          },
+          {
+            sec: 11,
+            timeStr: "00:11",
+            icono: "🎯",
+            titulo: "Centro al corazón del área chica",
+            desc: "Min 10:51 • Centro con comba al segundo palo hacia la espalda de los defensores.",
+            tele: {
+              tituloIA: "Fase 2: Quiebre de Basculación (Desajuste)",
+              descIA: "Falta de sincronización en la zaga. Desfase de 14.2 m entre central y lateral opuesto que habilita a Molina.",
+              metrica: "📐 Brecha en zaga: 14.2 m",
+              alerta: "🚨 Fuera de juego roto (2.1 m)",
+              spots: [
+                { x: 38, y: 54, radius: 24, color: '#ef4444', label: "Freddy Molina (#9 Rival)", sub: "Ataque segundo palo" },
+                { x: 55, y: 58, radius: 22, color: '#10b981', label: "Central Leones", sub: "Línea de corte" }
+              ],
+              lineas: [
+                { x1: 38, y1: 54, x2: 55, y2: 58, color: '#ef4444', dash: [6, 4], arrow: false, label: "Desfase: 14.2 m" },
+                { x1: 72, y1: 52, x2: 40, y2: 53, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de centro" }
+              ],
+              zonas: [
+                { points: [{x:32, y:50}, {x:46, y:50}, {x:44, y:62}, {x:30, y:60}], color: 'rgba(239, 68, 68, 0.25)', stroke: '#ef4444', label: "Zona Concedida" }
+              ]
+            }
+          },
+          {
+            sec: 18,
+            timeStr: "00:18",
+            icono: "⚽",
+            titulo: "¡Gol de Freddy Molina (1-0)!",
+            desc: "Min 10:58 • Anticipación y definición junto al poste ante el achique de Jhon Figueroa.",
+            tele: {
+              tituloIA: "Fase 3: Definición en 1 Toque",
+              descIA: "Molina conecta de volea rasante. Tiempo de reacción del remate: 0.38 segundos.",
+              metrica: "⚡ Velocidad remate: 74 km/h",
+              alerta: "❌ 1-0 Unión Magdalena",
+              spots: [
+                { x: 42, y: 56, radius: 26, color: '#ef4444', label: "F. Molina (#9)", sub: "Definición 1-0" },
+                { x: 48, y: 52, radius: 20, color: '#f59e0b', label: "Jhon Figueroa (#1)", sub: "Achique portería" }
+              ],
+              lineas: [
+                { x1: 42, y1: 56, x2: 47, y2: 51, color: '#ef4444', dash: [], arrow: true, label: "Remate al palo" }
+              ]
+            }
+          },
+          {
+            sec: 25,
+            timeStr: "00:25",
+            icono: "📋",
+            titulo: "Reagrupación de la zaga auriverde",
+            desc: "Min 11:05 • Ajuste posicional inmediato para taponar el carril opuesto.",
+            tele: {
+              tituloIA: "Ajuste Táctico: Cierre de Intervalos",
+              descIA: "Indicación del cuerpo técnico: sincronizar el repliegue y achicar distancia con el lateral izquierdo.",
+              metrica: "📐 Distancia objetivo: ≤ 8 m",
+              alerta: "🛡️ Reorganización Leones",
+              lineas: [
+                { x1: 30, y1: 64, x2: 70, y2: 64, color: '#10b981', dash: [6, 4], arrow: false, label: "Línea defensiva corregida" }
+              ]
+            }
+          }
         ],
         analisis: "<strong>Dictamen Táctico de Jack Bedoya & DT Arboleda:</strong> Gol concedido por falta de basculación a tiempo del lateral opuesto al viaje del balón. Es el clip formativo esencial para mostrar a los defensas juveniles de Ditaires la necesidad de sincronizar el paso adelante para dejar al delantero en fuera de juego o cerrar la diagonal interior.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:11 y traza en rojo la distancia entre el central y el atacante que remata.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:11 para ver el Telestration IA automático del desfase defensivo.",
         colorBadge: "rose"
       },
       clip_2: {
@@ -661,13 +767,87 @@
         duracionSec: 35,
         categoria: "Transición Defensiva",
         eventos: [
-          { sec: 0, timeStr: "00:00", icono: "⚔️", titulo: "Pérdida en salida de Leones", desc: "Min 14:40 • Pérdida de balón en tres cuartos; Unión activa transición rápida." },
-          { sec: 12, timeStr: "00:12", icono: "⚠️", titulo: "Fijación y quiebre de línea", desc: "Min 14:52 • El volante rival arrastra la marca y filtra la pelota al callejón central." },
-          { sec: 18, timeStr: "00:18", icono: "⚽", titulo: "¡Gol de Manuel Ballesteros (2-0)!", desc: "Min 14:58 • Remate rasante y ajustado al palo derecho que supera la estirada felina." },
-          { sec: 26, timeStr: "00:26", icono: "🗣️", titulo: "Instrucción de banco (DT Arboleda)", desc: "Min 15:06 • El cuerpo técnico pide juntar las líneas del doble pivote." }
+          {
+            sec: 0,
+            timeStr: "00:00",
+            icono: "⚔️",
+            titulo: "Pérdida en salida de Leones",
+            desc: "Min 14:40 • Pérdida de balón en tres cuartos; Unión activa transición rápida.",
+            tele: {
+              tituloIA: "Pérdida en Zona de Inicio",
+              descIA: "Transición negativa activada. El equipo queda desplegado en amplitud y desprotegido por dentro.",
+              metrica: "⏱️ Tiempo de repliegue: 2.1s",
+              alerta: "⚠️ Transición Ofensiva Rival",
+              spots: [
+                { x: 50, y: 62, radius: 24, color: '#ef4444', label: "Zona de Pérdida", sub: "Presión samaria" }
+              ],
+              lineas: [
+                { x1: 50, y1: 62, x2: 44, y2: 72, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pase interceptado" }
+              ]
+            }
+          },
+          {
+            sec: 12,
+            timeStr: "00:12",
+            icono: "⚠️",
+            titulo: "Fijación y quiebre de línea",
+            desc: "Min 14:52 • El volante rival arrastra la marca y filtra la pelota al callejón central.",
+            tele: {
+              tituloIA: "Quiebre de Bloque Central (IA Detect)",
+              descIA: "Pivotes de contención superados. Intervalo libre de 12.8 m entre volantes y defensas centrales.",
+              metrica: "📐 Brecha central: 12.8 m",
+              alerta: "🚨 Falta táctica preventiva omitida",
+              spots: [
+                { x: 52, y: 58, radius: 26, color: '#f59e0b', label: "Manuel Ballesteros", sub: "Espacio entre líneas" },
+                { x: 38, y: 65, radius: 22, color: '#ef4444', label: "Central Izquierdo", sub: "Retroceso condicionado" }
+              ],
+              lineas: [
+                { x1: 34, y1: 66, x2: 68, y2: 66, color: '#ef4444', dash: [6, 4], arrow: false, label: "Línea de contención rota (12.8 m)" },
+                { x1: 44, y1: 50, x2: 50, y2: 56, color: '#10b981', dash: [], arrow: true, label: "Cobertura de pivote requerida" }
+              ],
+              zonas: [
+                { points: [{x:42, y:52}, {x:62, y:52}, {x:60, y:68}, {x:38, y:68}], color: 'rgba(239, 68, 68, 0.22)', stroke: '#ef4444', label: "Callejón Central Vulnerado" }
+              ]
+            }
+          },
+          {
+            sec: 18,
+            timeStr: "00:18",
+            icono: "⚽",
+            titulo: "¡Gol de Manuel Ballesteros (2-0)!",
+            desc: "Min 14:58 • Remate rasante y ajustado al palo derecho que supera la estirada felina.",
+            tele: {
+              tituloIA: "Impacto y Gol (2-0)",
+              descIA: "Remate frontal rasante pegado a la base del poste izquierdo. Estirada insuficiente del guardameta.",
+              metrica: "⚡ Velocidad remate: 82 km/h",
+              alerta: "❌ 2-0 Unión Magdalena",
+              spots: [
+                { x: 52, y: 62, radius: 26, color: '#f59e0b', label: "M. Ballesteros", sub: "Remate ajustado" }
+              ],
+              lineas: [
+                { x1: 52, y1: 62, x2: 44, y2: 52, color: '#f59e0b', dash: [], arrow: true, label: "Trayectoria rasante" }
+              ]
+            }
+          },
+          {
+            sec: 26,
+            timeStr: "00:26",
+            icono: "🗣️",
+            titulo: "Instrucción de banco (DT Arboleda)",
+            desc: "Min 15:06 • El cuerpo técnico pide juntar las líneas del doble pivote.",
+            tele: {
+              tituloIA: "Corrección Táctica de Banco",
+              descIA: "Orden técnica: Reducir distancia entre el mediocentro defensivo y los centrales a menos de 8 metros.",
+              metrica: "📐 Distancia óptima: 7.5 m",
+              alerta: "🛡️ Ajuste de Doble Pivote",
+              lineas: [
+                { x1: 40, y1: 60, x2: 60, y2: 60, color: '#10b981', dash: [4, 4], arrow: false, label: "Bloque 2 pivotes cerrado" }
+              ]
+            }
+          }
         ],
         analisis: "<strong>Dictamen Táctico:</strong> Desorganización tras pérdida en zona de gestación. Permite evaluar la importancia de la 'falta táctica preventiva' antes de que el adversario pise la medialuna con panorama de tiro libre.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:12 y dibuja la línea de retroceso de los mediocentros para cerrar el carril central.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:12 para ver el Telestration IA automático del quiebre central.",
         colorBadge: "rose"
       },
       clip_3: {
@@ -678,13 +858,82 @@
         duracionSec: 35,
         categoria: "Estructura Colectiva",
         eventos: [
-          { sec: 0, timeStr: "00:00", icono: "🧤", titulo: "Preparación saque de meta rival", desc: "Min 18:15 • El guardameta Manuel Tasso ubica el balón en el área pequeña." },
-          { sec: 14, timeStr: "00:14", icono: "🦁", titulo: "Nicolás Restrepo (#24) en banda", desc: "Min 18:29 • Claramente visible en el sector inferior derecho retrocediendo y perfilándose." },
-          { sec: 22, timeStr: "00:22", icono: "🛡️", titulo: "Estructura 1-4-4-2 compacta", desc: "Min 18:37 • Línea de 4 defensores y 4 volantes achicando espacios interiores." },
-          { sec: 31, timeStr: "00:31", icono: "🛑", titulo: "Rival forzado al balón dividido", desc: "Min 18:46 • Ante el bloqueo cerrado de Leones, Unión renuncia a salir jugando y lanza en largo." }
+          {
+            sec: 0,
+            timeStr: "00:00",
+            icono: "🧤",
+            titulo: "Preparación saque de meta rival",
+            desc: "Min 18:15 • El guardameta Manuel Tasso ubica el balón en el área pequeña.",
+            tele: {
+              tituloIA: "Disposición Táctica en Balón Parado",
+              descIA: "Leones adelanta líneas y sitúa el bloque medio en 42 metros de su propia portería.",
+              metrica: "📐 Altura de bloque: 42 m",
+              alerta: "✅ Posicionamiento Correcto",
+              lineas: [
+                { x1: 20, y1: 65, x2: 80, y2: 65, color: '#10b981', dash: [6, 4], arrow: false, label: "Línea de contención media" }
+              ]
+            }
+          },
+          {
+            sec: 14,
+            timeStr: "00:14",
+            icono: "🦁",
+            titulo: "Nicolás Restrepo (#24) en banda",
+            desc: "Min 18:29 • Claramente visible en el sector inferior derecho retrocediendo y perfilándose.",
+            tele: {
+              tituloIA: "Perfil Táctico: Nicolás Restrepo (#24)",
+              descIA: "Excelente perfil corporal del canterano de Ditaires. Vigilancia activa y distancia perfecta con el central izquierdo.",
+              metrica: "📐 Distancia con central: 7.2 m",
+              alerta: "🦁 Cantera Sub-20 en Acción",
+              spots: [
+                { x: 30, y: 66, radius: 28, color: '#f59e0b', label: "Nicolás Restrepo (#24)", sub: "Lateral Izq. Canterano" },
+                { x: 48, y: 64, radius: 22, color: '#10b981', label: "Central Izquierdo", sub: "Cobertura alineada" }
+              ],
+              lineas: [
+                { x1: 30, y1: 66, x2: 48, y2: 64, color: '#10b981', dash: [], arrow: false, label: "Sincronía defensiva: 7.2 m" },
+                { x1: 30, y1: 66, x2: 24, y2: 56, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Carril de repliegue" }
+              ],
+              zonas: [
+                { points: [{x:22, y:60}, {x:54, y:60}, {x:52, y:72}, {x:20, y:72}], color: 'rgba(16, 185, 129, 0.18)', stroke: '#10b981', label: "Zona de Cobertura Asegurada" }
+              ]
+            }
+          },
+          {
+            sec: 22,
+            timeStr: "00:22",
+            icono: "🛡️",
+            titulo: "Estructura 1-4-4-2 compacta",
+            desc: "Min 18:37 • Línea de 4 defensores y 4 volantes achicando espacios interiores.",
+            tele: {
+              tituloIA: "Estructura 1-4-4-2 Sincronizada",
+              descIA: "Bloque defensivo compacto de Leones. Distancia entre línea de defensas y volantes reducida a 11.4 metros.",
+              metrica: "📐 Distancia interlíneas: 11.4 m",
+              alerta: "🛡️ Bloque Compacto",
+              lineas: [
+                { x1: 18, y1: 68, x2: 78, y2: 68, color: '#10b981', dash: [], arrow: false, label: "Línea Defensiva de 4" },
+                { x1: 22, y1: 56, x2: 74, y2: 56, color: '#f59e0b', dash: [], arrow: false, label: "Línea de 4 Volantes" }
+              ]
+            }
+          },
+          {
+            sec: 31,
+            timeStr: "00:31",
+            icono: "🛑",
+            titulo: "Rival forzado al balón dividido",
+            desc: "Min 18:46 • Ante el bloqueo cerrado de Leones, Unión renuncia a salir jugando y lanza en largo.",
+            tele: {
+              tituloIA: "Éxito Táctico: Salida Rival Bloqueada",
+              descIA: "Cierre total de líneas de pase. Unión se ve obligada al balonazo largo sin destinatario.",
+              metrica: "📊 Eficacia de presión: 100%",
+              alerta: "✅ Recuperación de Balón",
+              lineas: [
+                { x1: 65, y1: 45, x2: 35, y2: 65, color: '#ef4444', dash: [6, 4], arrow: true, label: "Pelotazo forzado rival" }
+              ]
+            }
+          }
         ],
         analisis: "<strong>Evaluación Individual (Nicolás Restrepo #24):</strong> Gran rigor táctico del lateral canterano de la Sub-20. Mantiene la distancia de seguridad con el defensa central, cierra el pase entre líneas y obliga al rival al pelotazo forzado.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:14 para marcar con círculo amarillo a Nicolás Restrepo (#24) y trazar su zona de cobertura.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:14 para ver el Telestration IA automático del marcaje de Nicolás Restrepo #24.",
         colorBadge: "emerald"
       },
       clip_4: {
@@ -695,13 +944,76 @@
         duracionSec: 40,
         categoria: "Balón Parado Ofensivo (ABP)",
         eventos: [
-          { sec: 0, timeStr: "00:00", icono: "🚩", titulo: "Acomodación de cabeceadores", desc: "Min 55:50 • Bloque de cabeceadores de Leones se posiciona en el punto penal." },
-          { sec: 18, timeStr: "00:18", icono: "📐", titulo: "Cobro con rosca al primer palo", desc: "Min 56:08 • Envío tenso desde el córner izquierdo superando el primer obstáculo." },
-          { sec: 25, timeStr: "00:25", icono: "⚽", titulo: "¡GOLAZO DE CABEZA (2-1)!", desc: "Min 56:17 • Cristian Rodríguez (#9) anticipa a dos defensores e infla la red con potencia." },
-          { sec: 32, timeStr: "00:32", icono: "🔥", titulo: "Rescate del balón para remontar", desc: "Min 56:24 • Rodríguez busca la pelota al fondo del arco para reiniciar deprisa." }
+          {
+            sec: 0,
+            timeStr: "00:00",
+            icono: "🚩",
+            titulo: "Acomodación de cabeceadores",
+            desc: "Min 55:50 • Bloque de cabeceadores de Leones se posiciona en el punto penal.",
+            tele: {
+              tituloIA: "Diseño de ABP Ofensiva",
+              descIA: "Arrastre al segundo palo para vaciar el primer poste a la llegada del goleador.",
+              metrica: "📐 Zona diana: Primer Palo",
+              alerta: "🦁 Estrategia de Córner",
+              lineas: [
+                { x1: 55, y1: 52, x2: 65, y2: 50, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Movimiento de arrastre" }
+              ]
+            }
+          },
+          {
+            sec: 18,
+            timeStr: "00:18",
+            icono: "📐",
+            titulo: "Cobro con rosca al primer palo",
+            desc: "Min 56:08 • Envío tenso desde el córner izquierdo superando el primer obstáculo.",
+            tele: {
+              tituloIA: "Ejecución con Rosca Interior",
+              descIA: "Envío aéreo medido con velocidad de 68 km/h cayendo justo a la zona de anticipación.",
+              metrica: "⚡ Velocidad envío: 68 km/h",
+              alerta: "🎯 Centro Preciso",
+              lineas: [
+                { x1: 15, y1: 72, x2: 48, y2: 52, color: '#f59e0b', dash: [4, 4], arrow: true, label: "Trayectoria de rosca" }
+              ]
+            }
+          },
+          {
+            sec: 25,
+            timeStr: "00:25",
+            icono: "⚽",
+            titulo: "¡GOLAZO DE CABEZA (2-1)!",
+            desc: "Min 56:17 • Cristian Rodríguez (#9) anticipa a dos defensores e infla la red con potencia.",
+            tele: {
+              tituloIA: "Impacto Goleador: Cristian Rodríguez (#9)",
+              descIA: "Salto de 64 cm superando la marca doble. Giro de cuello perfecto y frentazo imparable a la escuadra.",
+              metrica: "📐 Elevación de salto: 64 cm",
+              alerta: "⚽ GOL DE LEONES (2-1)",
+              spots: [
+                { x: 48, y: 52, radius: 28, color: '#f59e0b', label: "Cristian Rodríguez (#9)", sub: "Goleador Auriverde" }
+              ],
+              lineas: [
+                { x1: 48, y1: 52, x2: 56, y2: 44, color: '#10b981', dash: [], arrow: true, label: "Cabezazo a la red" }
+              ],
+              zonas: [
+                { points: [{x:44, y:46}, {x:54, y:46}, {x:52, y:56}, {x:42, y:56}], color: 'rgba(245, 158, 11, 0.25)', stroke: '#f59e0b', label: "Zona de Impacto Óptimo" }
+              ]
+            }
+          },
+          {
+            sec: 32,
+            timeStr: "00:32",
+            icono: "🔥",
+            titulo: "Rescate del balón para remontar",
+            desc: "Min 56:24 • Rodríguez busca la pelota al fondo del arco para reiniciar deprisa.",
+            tele: {
+              tituloIA: "Carácter Competitivo",
+              descIA: "El equipo busca la remontada inmediata. Descuento histórico que reactivó la fe auriverde.",
+              metrica: "⚡ Tiempo de reacción: 1.1s",
+              alerta: "🔥 Impulso Emocional"
+            }
+          }
         ],
         analisis: "<strong>Pizarra Táctica (DT Alejandro Arboleda):</strong> Jugada ensayada en los entrenamientos de Ditaires. Movimiento de arrastre hacia el segundo palo que despejó la zona del primer poste para la irrupción fulminante de Cristian Rodríguez (#9). Ejecución modélica de ABP.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:20 y traza con flecha dorada la trayectoria de desmarque de Cristian Rodríguez hacia el primer palo.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:25 para ver el Telestration IA automático del cabezazo de Cristian Rodríguez #9.",
         colorBadge: "amber"
       },
       clip_5: {
@@ -712,13 +1024,70 @@
         duracionSec: 40,
         categoria: "Épica & Definición en Reposición",
         eventos: [
-          { sec: 0, timeStr: "00:00", icono: "⏱️", titulo: "Asedio total en el minuto 90+3'", desc: "Min 92:05 • Todo Leones volcado al ataque en campo samario buscando rescatar el punto." },
-          { sec: 14, timeStr: "00:14", icono: "💥", titulo: "Rebote disputado en el área", desc: "Min 92:19 • Balón dividido en el área chica que la defensa local no logra despejar." },
-          { sec: 16, timeStr: "00:16", icono: "⚽", titulo: "¡GOLAZO DEL EMPATE (2-2)!", desc: "Min 92:21 • Léider Pacheco (#17) remata con potencia mandando la pelota a guardar." },
-          { sec: 24, timeStr: "00:24", icono: "🎉", titulo: "Celebración y éxtasis del plantel", desc: "Min 92:29 • Carrera eufórica de Pacheco hacia la tribuna con todo el banquillo auriverde." }
+          {
+            sec: 0,
+            timeStr: "00:00",
+            icono: "⏱️",
+            titulo: "Asedio total en el minuto 90+3'",
+            desc: "Min 92:05 • Todo Leones volcado al ataque en campo samario buscando rescatar el punto.",
+            tele: {
+              tituloIA: "Asedio Ofensivo al Minuto 90+3'",
+              descIA: "7 jugadores de Leones pisando el último tercio rival en búsqueda del segundo balón.",
+              metrica: "👥 Densidad en área: 7 jugadores",
+              alerta: "🔥 Presión Final"
+            }
+          },
+          {
+            sec: 14,
+            timeStr: "00:14",
+            icono: "💥",
+            titulo: "Rebote disputado en el área",
+            desc: "Min 92:19 • Balón dividido en el área chica que la defensa local no logra despejar.",
+            tele: {
+              tituloIA: "Disputa de Segundo Balón",
+              descIA: "Defensa rival desarticulada ante el centro cerrado. Balón suelto a la espera del cazador.",
+              metrica: "⏱️ Balón suelto: 0.42s",
+              alerta: "⚠️ Oportunidad Crítica",
+              zonas: [
+                { points: [{x:46, y:52}, {x:60, y:52}, {x:58, y:64}, {x:44, y:64}], color: 'rgba(16, 185, 129, 0.2)', stroke: '#10b981', label: "Zona de Rebote Vivo" }
+              ]
+            }
+          },
+          {
+            sec: 16,
+            timeStr: "00:16",
+            icono: "⚽",
+            titulo: "¡GOLAZO DEL EMPATE (2-2)!",
+            desc: "Min 92:21 • Léider Pacheco (#17) remata con potencia mandando la pelota a guardar.",
+            tele: {
+              tituloIA: "La Frialdad del Revulsivo: Léider Pacheco (#17)",
+              descIA: "Reacción en 0.42 segundos para fusilar la red rival. Gol del empate heroico en Santa Marta.",
+              metrica: "⚡ Reacción: 0.42 s • 78 km/h",
+              alerta: "🔥 EMPATE HISTÓRICO (2-2)",
+              spots: [
+                { x: 54, y: 58, radius: 28, color: '#f59e0b', label: "Léider Pacheco (#17)", sub: "El Héroe del 90+3'" }
+              ],
+              lineas: [
+                { x1: 54, y1: 58, x2: 60, y2: 48, color: '#10b981', dash: [], arrow: true, label: "Remate cruzado imparable" }
+              ]
+            }
+          },
+          {
+            sec: 24,
+            timeStr: "00:24",
+            icono: "🎉",
+            titulo: "Celebración y éxtasis del plantel",
+            desc: "Min 92:29 • Carrera eufórica de Pacheco hacia la tribuna con todo el banquillo auriverde.",
+            tele: {
+              tituloIA: "ADN Guerrero de Itagüí Leones",
+              descIA: "Punto de oro obtenido con garra, convicción y juego colectivo hasta el silbatazo final.",
+              metrica: "🏆 Marcador Final: 2 - 2",
+              alerta: "🦁 ¡Garra Auriverde!"
+            }
+          }
         ],
         analisis: "<strong>Carácter y Sentido de Oportunidad:</strong> Léider Pacheco (#17) entró como revulsivo e interpretó con frialdad el segundo balón en tiempo suplementario. Este clip resume el ADN guerrero de Itagüí Leones: presionar y creer hasta el último suspiro del cronómetro.",
-        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Pausa en 00:15 para congelar la posición del impacto y la línea de pase que habilitó el remate.",
+        recomendacionDibujo: "🎨 <strong>Tip Pizarra:</strong> Toca en el hito 00:16 para ver el Telestration IA automático del gol agónico de Léider Pacheco #17.",
         colorBadge: "emerald"
       }
     };
@@ -731,6 +1100,7 @@
 
       // Actualizar fuente del video
       matchVideo.pause();
+      limpiarTelestration(false);
       matchVideo.src = data.archivo;
       matchVideo.load();
       matchVideo.play();
@@ -755,19 +1125,22 @@
       // Renderizar eventos del clip en la columna derecha
       const container = document.getElementById('eventosClipContainer');
       container.innerHTML = '';
-      data.eventos.forEach(ev => {
+      data.eventos.forEach((ev, idx) => {
         const item = document.createElement('button');
-        item.onclick = () => saltarAVideo(ev.sec, ev.titulo);
-        item.className = 'w-full text-left p-2.5 rounded-xl bg-slate-800/60 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-400/50 transition flex items-center justify-between cursor-pointer group';
+        item.onclick = () => ejecutarTelestrationEvento(currentClipKey, idx);
+        item.className = 'w-full text-left p-2.5 rounded-xl bg-slate-800/60 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-amber-400/70 transition flex items-center justify-between cursor-pointer group';
         item.innerHTML = `
           <div class="flex items-center space-x-2.5">
             <span class="text-base">${ev.icono}</span>
             <div>
-              <p class="text-xs font-bold text-white group-hover:text-emerald-300 transition">${ev.titulo}</p>
-              <p class="text-[11px] text-slate-400 leading-tight">${ev.desc}</p>
+              <div class="flex items-center space-x-2">
+                <p class="text-xs font-bold text-white group-hover:text-amber-300 transition">${ev.titulo}</p>
+                <span class="text-[9px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 rounded-full flex items-center gap-1">✨ IA</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-tight mt-0.5">${ev.desc}</p>
             </div>
           </div>
-          <span class="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded ml-2 whitespace-nowrap">${ev.timeStr}</span>
+          <span class="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded ml-2 whitespace-nowrap shrink-0">${ev.timeStr}</span>
         `;
         container.appendChild(item);
       });
@@ -1174,6 +1547,287 @@
     function limpiarCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
+
+    // ========================================================
+    // TELESTRATION TÁCTICO AUTOMÁTICO (IA / COMPUTER VISION)
+    // ========================================================
+    let modoTelestrationActivo = false;
+    let currentEventIdx = 0;
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y + w, x, y, r);
+      ctx.closePath();
+    }
+
+    function ejecutarTelestrationEvento(clipKey, eventIdx) {
+      const clip = clipsData[clipKey];
+      if (!clip || !clip.eventos || !clip.eventos[eventIdx]) return;
+      const ev = clip.eventos[eventIdx];
+      currentEventIdx = eventIdx;
+
+      // 1. Saltar y pausar el video en el segundo exacto
+      matchVideo.pause();
+      matchVideo.currentTime = ev.sec;
+
+      // 2. Preparar el canvas
+      initCanvas();
+      canvas.classList.remove('hidden');
+      modoTelestrationActivo = true;
+
+      // 3. Renderizar telestration táctico estilo televisión
+      renderTelestration(ev.tele, ev.titulo, ev.desc);
+
+      // 4. Mostrar tarjeta HUD flotante
+      const card = document.getElementById('telestrationCard');
+      if (card) {
+        document.getElementById('teleCardTitulo').innerText = ev.tele?.tituloIA || ev.titulo;
+        document.getElementById('teleCardDesc').innerText = ev.tele?.descIA || ev.desc;
+        document.getElementById('teleCardMetrica').innerText = ev.tele?.metrica || '📐 Análisis Táctico Oficial';
+        document.getElementById('teleCardAlerta').innerText = ev.tele?.alerta || '⚡ Recomendación DT';
+        card.classList.remove('hidden');
+      }
+
+      // 5. En móviles, hacer scroll suave al reproductor de video
+      if (window.innerWidth < 1024) {
+        const vWrap = document.querySelector('.video-wrapper');
+        if (vWrap) {
+          vWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
+    function renderTelestration(tele, titulo, desc) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!tele) return;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 1. ZONAS TÁCTICAS (ESPACIOS CONCEDIDOS O DE REMATE)
+      if (tele.zonas && tele.zonas.length > 0) {
+        tele.zonas.forEach(z => {
+          ctx.save();
+          ctx.beginPath();
+          z.points.forEach((pt, i) => {
+            const px = (pt.x / 100) * w;
+            const py = (pt.y / 100) * h;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          });
+          ctx.closePath();
+          ctx.fillStyle = z.color || 'rgba(239, 68, 68, 0.22)';
+          ctx.fill();
+          ctx.strokeStyle = z.stroke || '#ef4444';
+          ctx.lineWidth = 2;
+          ctx.setLineDash(z.dash || [6, 4]);
+          ctx.stroke();
+
+          if (z.label) {
+            let avgX = 0, avgY = 0;
+            z.points.forEach(pt => { avgX += pt.x; avgY += pt.y; });
+            avgX = (avgX / z.points.length / 100) * w;
+            avgY = (avgY / z.points.length / 100) * h;
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+            ctx.strokeStyle = z.stroke || '#ef4444';
+            ctx.setLineDash([]);
+            ctx.lineWidth = 1;
+            const textW = ctx.measureText(z.label).width + 16;
+            drawRoundRect(ctx, avgX - textW/2, avgY - 10, textW, 20, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(z.label, avgX, avgY);
+          }
+          ctx.restore();
+        });
+      }
+
+      // 2. LÍNEAS Y VECTORES TÁCTICOS
+      if (tele.lineas && tele.lineas.length > 0) {
+        tele.lineas.forEach(l => {
+          ctx.save();
+          const x1 = (l.x1 / 100) * w;
+          const y1 = (l.y1 / 100) * h;
+          const x2 = (l.x2 / 100) * w;
+          const y2 = (l.y2 / 100) * h;
+
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = l.color || '#f59e0b';
+          ctx.lineWidth = l.width || 3;
+          if (l.dash) ctx.setLineDash(l.dash);
+          else ctx.setLineDash([]);
+          ctx.stroke();
+
+          if (l.arrow) {
+            const headlen = 12;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.fillStyle = l.color || '#f59e0b';
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          if (l.label) {
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2;
+            ctx.save();
+            ctx.font = 'bold 10px sans-serif';
+            const textWidth = ctx.measureText(l.label).width + 14;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.strokeStyle = l.color || '#f59e0b';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([]);
+            drawRoundRect(ctx, midX - textWidth / 2, midY - 10, textWidth, 20, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(l.label, midX, midY);
+            ctx.restore();
+          }
+          ctx.restore();
+        });
+      }
+
+      // 3. ANILLOS / SPOTLIGHTS SOBRE JUGADORES (BROADCAST)
+      if (tele.spots && tele.spots.length > 0) {
+        tele.spots.forEach(s => {
+          ctx.save();
+          const cx = (s.x / 100) * w;
+          const cy = (s.y / 100) * h;
+          const rx = (s.radius || 26) * (w / 700);
+          const ry = rx * 0.45;
+
+          // Anillo exterior punteado
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx * 1.35, ry * 1.35, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = s.color || '#f59e0b';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+
+          // Anillo base con brillo de neón
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fillStyle = s.color ? `${s.color}33` : 'rgba(245, 158, 11, 0.2)';
+          ctx.fill();
+          ctx.strokeStyle = s.color || '#f59e0b';
+          ctx.lineWidth = 3;
+          ctx.setLineDash([]);
+          ctx.shadowColor = s.color || '#f59e0b';
+          ctx.shadowBlur = 12;
+          ctx.stroke();
+
+          // Línea vertical hacia la etiqueta
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - ry);
+          ctx.lineTo(cx, cy - ry - 26);
+          ctx.strokeStyle = s.color || '#f59e0b';
+          ctx.lineWidth = 1.5;
+          ctx.shadowBlur = 0;
+          ctx.stroke();
+
+          // Etiqueta del futbolista
+          if (s.label) {
+            ctx.font = 'bold 11px sans-serif';
+            const labelW = Math.max(ctx.measureText(s.label).width, s.sub ? ctx.measureText(s.sub).width : 0) + 16;
+            const boxH = s.sub ? 32 : 20;
+            const boxY = cy - ry - 26 - boxH;
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+            ctx.strokeStyle = s.color || '#f59e0b';
+            ctx.lineWidth = 1.5;
+            drawRoundRect(ctx, cx - labelW / 2, boxY, labelW, boxH, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            if (s.sub) {
+              ctx.textBaseline = 'top';
+              ctx.fillText(s.label, cx, boxY + 4);
+              ctx.font = 'bold 9px sans-serif';
+              ctx.fillStyle = s.color || '#f59e0b';
+              ctx.fillText(s.sub, cx, boxY + 18);
+            } else {
+              ctx.textBaseline = 'middle';
+              ctx.fillText(s.label, cx, boxY + boxH / 2);
+            }
+          }
+          ctx.restore();
+        });
+      }
+    }
+
+    function reanudarJugada() {
+      limpiarTelestration(false);
+      matchVideo.play();
+    }
+
+    function limpiarTelestration(mantenerPausado) {
+      modoTelestrationActivo = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!modoDibujo) {
+        canvas.classList.add('hidden');
+      }
+      const card = document.getElementById('telestrationCard');
+      if (card) card.classList.add('hidden');
+    }
+
+    function cerrarTelestration() {
+      limpiarTelestration(true);
+    }
+
+    function activarModoLapizManual() {
+      const card = document.getElementById('telestrationCard');
+      if (card) card.classList.add('hidden');
+      if (!modoDibujo) {
+        toggleModoDibujo();
+      }
+    }
+
+    function triggerTelestrationActual() {
+      const curSec = Math.floor(matchVideo.currentTime);
+      const clip = clipsData[currentClipKey];
+      if (!clip || !clip.eventos) return;
+      
+      let closestIdx = 0;
+      let minDiff = 999;
+      clip.eventos.forEach((ev, idx) => {
+        const diff = Math.abs(ev.sec - curSec);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+
+      ejecutarTelestrationEvento(currentClipKey, closestIdx);
+    }
+
+    matchVideo.addEventListener('play', () => {
+      if (modoTelestrationActivo) {
+        limpiarTelestration(false);
+      }
+    });
 
     function generarMicroClip() {
       alert("⚡ Micro-Clip recortado con los trazos tácticos de Ditaires.\n\nListo para enviar directamente al WhatsApp del cuerpo técnico.");
