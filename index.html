@@ -119,25 +119,25 @@
     </div>
   </section>
 
-  <!-- PESTAÑAS PRINCIPALES DEL SISTEMA (RESPONSIVE TOUCH-FRIENDLY) -->
+  <!-- PESTAÑAS PRINCIPALES DEL SISTEMA (SEGMENTED CONTROL MÓVIL Y DESKTOP) -->
   <main class="max-w-7xl mx-auto px-3 sm:px-6 pb-12">
-    <div class="border-b border-slate-800 flex space-x-2 sm:space-x-6 text-xs sm:text-sm font-bold mb-4 sm:mb-6 overflow-x-auto no-scrollbar whitespace-nowrap">
-      <button onclick="cambiarVista('video')" id="tab-video" class="pb-2.5 sm:pb-3 text-amber-400 border-b-2 border-amber-400 flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
-        <span>🎥</span>
-        <span class="hidden sm:inline">Laboratorio Táctico & Video (Jack Bedoya / DT Arboleda)</span>
+    <nav id="mainNavTabs" aria-label="Menú Principal" class="bg-slate-900/90 border border-slate-800 p-1.5 sm:p-2 rounded-2xl mb-5 sm:mb-6 flex items-center space-x-2 overflow-x-auto no-scrollbar shadow-xl sticky top-2 z-40 backdrop-blur-md">
+      <button type="button" onclick="cambiarVista('video')" id="tab-video" class="tab-btn px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black text-amber-300 bg-[#186835] border-2 border-amber-400 shadow-md flex items-center space-x-2 shrink-0 cursor-pointer transition-all">
+        <span class="text-base">🎥</span>
+        <span class="hidden sm:inline">Laboratorio Táctico & Video (DT / Analista)</span>
         <span class="sm:hidden">Video Táctico</span>
       </button>
-      <button onclick="cambiarVista('ficha')" id="tab-ficha" class="pb-2.5 sm:pb-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
-        <span>🦁</span>
+      <button type="button" onclick="cambiarVista('ficha')" id="tab-ficha" class="tab-btn px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white bg-slate-950/60 border-2 border-slate-800/80 flex items-center space-x-2 shrink-0 cursor-pointer transition-all">
+        <span class="text-base">🦁</span>
         <span class="hidden sm:inline">Ficha 360° del Futbolista (Plantilla Real & Cantera)</span>
         <span class="sm:hidden">Ficha 360°</span>
       </button>
-      <button onclick="cambiarVista('medicina')" id="tab-medicina" class="pb-2.5 sm:pb-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-1.5 cursor-pointer shrink-0 transition">
-        <span>🏥</span>
+      <button type="button" onclick="cambiarVista('medicina')" id="tab-medicina" class="tab-btn px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white bg-slate-950/60 border-2 border-slate-800/80 flex items-center space-x-2 shrink-0 cursor-pointer transition-all">
+        <span class="text-base">🏥</span>
         <span class="hidden sm:inline">Medicina Deportiva & Cargas (Dr. Álvarez / PF Pérez)</span>
         <span class="sm:hidden">Dpto. Médico</span>
       </button>
-    </div>
+    </nav>
 
     <!-- ========================================== -->
     <!-- VISTA 1: LABORATORIO DE VIDEO & TELESTRATION -->
@@ -219,72 +219,6 @@
               <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">Épica agónica de L. Pacheco #17</p>
             </div>
             <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Minuto 90+3'</span>
-          </button>
-        </div>
-      </div>
-          <!-- Clip 1 -->
-          <button onclick="cargarClip('clip_1')" id="btn-clip_1" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 10:58</span>
-              <span class="text-xs">⚽</span>
-            </div>
-            <div>
-              <p class="text-xs font-black text-white leading-snug">Gol 1 Rival</p>
-              <p class="text-[11px] text-slate-400 mt-0.5">Centro y definición de Freddy Molina</p>
-            </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Desajuste Zaga</span>
-          </button>
-
-          <!-- Clip 2 -->
-          <button onclick="cargarClip('clip_2')" id="btn-clip_2" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">1T • 14:58</span>
-              <span class="text-xs">⚽</span>
-            </div>
-            <div>
-              <p class="text-xs font-black text-white leading-snug">Gol 2 Rival</p>
-              <p class="text-[11px] text-slate-400 mt-0.5">Disparo rasante M. Ballesteros</p>
-            </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Transición Central</span>
-          </button>
-
-          <!-- Clip 3 -->
-          <button onclick="cargarClip('clip_3')" id="btn-clip_3" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-emerald-500 bg-emerald-950/40 text-left transition cursor-pointer flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">1T • 18:29</span>
-              <span class="text-xs">🛡️</span>
-            </div>
-            <div>
-              <p class="text-xs font-black text-white leading-snug">Bloque & Restrepo #24</p>
-              <p class="text-[11px] text-slate-400 mt-0.5">Salida corta rival y repliegue</p>
-            </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">35s • Táctica Colectiva</span>
-          </button>
-
-          <!-- Clip 4 -->
-          <button onclick="cargarClip('clip_4')" id="btn-clip_4" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">2T • 56:17</span>
-              <span class="text-xs">🦁</span>
-            </div>
-            <div>
-              <p class="text-xs font-black text-white leading-snug">Gol Leones (2-1)</p>
-              <p class="text-[11px] text-slate-400 mt-0.5">Córner & cabezazo C. Rodríguez #9</p>
-            </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Balón Parado</span>
-          </button>
-
-          <!-- Clip 5 -->
-          <button onclick="cargarClip('clip_5')" id="btn-clip_5" class="clip-card p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-transparent text-left transition cursor-pointer flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">2T • 92:21</span>
-              <span class="text-xs">🔥</span>
-            </div>
-            <div>
-              <p class="text-xs font-black text-white leading-snug">Gol Empate (2-2)</p>
-              <p class="text-[11px] text-slate-400 mt-0.5">Épica agónica de L. Pacheco #17</p>
-            </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">40s • Épica en 90+3'</span>
           </button>
         </div>
       </div>
@@ -1246,19 +1180,37 @@
     }
 
     function cambiarVista(vista) {
-      document.getElementById('vista-video').classList.add('hidden');
-      document.getElementById('vista-ficha').classList.add('hidden');
-      document.getElementById('vista-medicina').classList.add('hidden');
-
-      document.getElementById('tab-video').classList.remove('text-amber-400', 'border-amber-400');
-      document.getElementById('tab-ficha').classList.remove('text-amber-400', 'border-amber-400');
-      document.getElementById('tab-medicina').classList.remove('text-amber-400', 'border-amber-400');
-
-      document.getElementById(`vista-${vista}`).classList.remove('hidden');
-      document.getElementById(`tab-${vista}`).classList.add('text-amber-400', 'border-amber-400');
+      const vistas = ['video', 'ficha', 'medicina'];
       
+      vistas.forEach(v => {
+        const vistaEl = document.getElementById(`vista-${v}`);
+        const tabEl = document.getElementById(`tab-${v}`);
+        
+        if (vistaEl) {
+          if (v === vista) {
+            vistaEl.classList.remove('hidden');
+          } else {
+            vistaEl.classList.add('hidden');
+          }
+        }
+        
+        if (tabEl) {
+          if (v === vista) {
+            tabEl.className = 'tab-btn px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black text-amber-300 bg-[#186835] border-2 border-amber-400 shadow-lg flex items-center space-x-2 shrink-0 cursor-pointer transition-all scale-[1.02]';
+          } else {
+            tabEl.className = 'tab-btn px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white bg-slate-950/60 border-2 border-slate-800/80 flex items-center space-x-2 shrink-0 cursor-pointer transition-all';
+          }
+        }
+      });
+
       if (vista === 'video') {
-        setTimeout(initCanvas, 100);
+        setTimeout(initCanvas, 150);
+      }
+
+      // Desplazar suavemente a la parte superior de las pestañas en móviles
+      const navEl = document.getElementById('mainNavTabs');
+      if (navEl && window.innerWidth < 768) {
+        navEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
 
